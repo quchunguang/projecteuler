@@ -77,7 +77,21 @@ func checkPrimeSelect(s string) {
 //
 // Find the smallest positive integer, x, such that 2x, 3x, 4x, 5x, and 6x, contain the same digits.
 func PE52() int {
-	return 142857
+	for i := 1; ; i++ {
+		dns := DigNums(i)
+		sort.Ints(dns)
+		for j := 2; j <= 6; j++ {
+			dns2 := DigNums(i * j)
+			sort.Ints(dns2)
+			if !EqualInts(dns, dns2) {
+				goto NEXT
+			}
+		}
+		// Found!!!
+		return i
+	NEXT:
+	}
+	return 0
 }
 
 // Problem 53 - Combinatoric selections
@@ -112,8 +126,236 @@ func PE53(N int) (ret int) {
 
 // Problem 54 - Poker hands
 //
-func PE54() (ret int) {
+// In the card game poker, a hand consists of five cards and are ranked, from lowest to highest, in the following way:
+//     Rank
+//     0 High Card: Highest value card.
+//     1 One Pair: Two cards of the same value.
+//     2 Two Pairs: Two different pairs.
+//     3 Three of a Kind: Three cards of the same value.
+//     4 Straight: All cards are consecutive values.
+//     5 Flush: All cards of the same suit.
+//     6 Full House: Three of a kind and a pair.
+//     7 Four of a Kind: Four cards of the same value.
+//     8 Straight Flush: All cards are consecutive values of same suit.
+//     9 Royal Flush: Ten, Jack, Queen, King, Ace, in same suit.
+//
+// The cards are valued in the order:
+// 2, 3, 4, 5, 6, 7, 8, 9, 10, Jack, Queen, King, Ace.
+//
+// If two players have the same ranked hands then the rank made up of the highest value wins; for example, a pair of eights beats a pair of fives (see example 1 below). But if two ranks tie, for example, both players have a pair of queens, then highest cards in each hand are compared (see example 4 below); if the highest cards tie then the next highest cards are compared, and so on.
+//
+// Consider the following five hands dealt to two players:
+// Hand	 	Player 1	 		Player 2	 			Winner
+// 1	 	5H 5C 6S 7S KD		2C 3S 8S 8D TD			Player 2
+// 			Pair of Fives		Pair of Eights
+// 2	 	5D 8C 9S JS AC		2C 5C 7D 8S QH			Player 1
+// 			Highest card Ace	Highest card Queen
+// 3	 	2D 9C AS AH AC		3D 6D 7D TD QD			Player 2
+// 			Three Aces			Flush with Diamonds
+// 4	 	4D 6S 9H QH QC		3D 6D 7H QD QS			Player 1
+// 			Pair of Queens		Pair of Queens
+// 			Highest card Nine	Highest card Seven
+// 5	 	2H 2D 4C 4D 4S		3C 3D 3S 9S 9D			Player 1
+// 			Full House			Full House
+// 			With Three Fours	with Three Threes
+//
+// The file, poker.txt, contains one-thousand random hands dealt to two players. Each line of the file contains ten cards (separated by a single space): the first five are Player 1's cards and the last five are Player 2's cards. You can assume that all hands are valid (no invalid characters or repeated cards), each player's hand is in no specific order, and in each hand there is a clear winner.
+//
+// How many hands does Player 1 win?
+func PE54(filename string) (ret int) {
+	table := CSWs(filename, " ")
+	for _, hand := range table {
+		p1 := hand[:5]
+		p2 := hand[5:]
+		if p1Win5Card(p1, p2) {
+			ret++
+		}
+	}
 	return
+}
+
+func p1Win5Card(p1, p2 []string) bool {
+	r1, v1, h1 := rank5Card(p1)
+	r2, v2, h2 := rank5Card(p2)
+	if r1 > r2 {
+		return true
+	} else if r1 < r2 {
+		return false
+	} else if v1 > v2 {
+		return true
+	} else if v1 < v2 {
+		return false
+	} else if h1 > h2 {
+		return true
+	} else if h1 < h2 {
+		return false
+	}
+	fmt.Println("Cannot judge!!!")
+	fmt.Println(p1, " <=> ", p2)
+
+	return true
+}
+
+var cardValue = map[byte]int{'2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, 'T': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14}
+
+func rank5Card(card []string) (rank, value, high int) {
+	var straight, flush, four, three, pair, pairthree, pair2 int
+	sortCard(card)
+
+	flush = testCardFlush(card)
+	straight = testCardStraight(card)
+
+	if flush > 0 && straight > 0 {
+		if straight == 14 {
+			rank = 9 // Royal Flush: Ten, Jack, Queen, King, Ace, in same suit.
+		} else {
+			rank = 8 // Straight Flush: All cards are consecutive values of same suit.
+		}
+		value = flush
+		high = flush
+		return
+	}
+
+	four, high = testCardFour(card)
+	if four > 0 {
+		rank = 7 // Four of a Kind: Four cards of the same value.
+		value = four
+		return
+	}
+
+	three, pairthree, high = testCardThree(card)
+	if pairthree > 0 {
+		rank = 6 // Full House: Three of a kind and a pair.
+		value = three
+		high = pair
+		return
+	}
+
+	if flush > 0 {
+		rank = 5 // Flush: All cards of the same suit.
+		value = flush
+		high = flush
+		return
+	}
+
+	if straight > 0 {
+		rank = 4 // Straight: All cards are consecutive values.
+		value = straight
+		high = straight
+		return
+	}
+
+	if three > 0 {
+		rank = 3 // Three of a Kind: Three cards of the same value.
+		value = three
+		return
+	}
+
+	pair, pair2, high = testCardPair(card)
+	if pair2 > 0 {
+		rank = 2 // Two Pairs: Two different pairs.
+		value = pair2
+		high = pair // BAD: pair2, pair all same, no chance compare the last one
+		return
+	}
+
+	if pair > 0 {
+		rank = 1 // One Pair: Two cards of the same value.
+		value = pair
+		return
+	}
+
+	rank = 0 // High Card: Highest value card.
+	value = cardValue[card[4][0]]
+	high = cardValue[card[4][0]]
+	return
+}
+
+// Test four
+func testCardFour(card []string) (four, high int) {
+	for i := 0; i < 2; i++ {
+		if cardValue[card[i][0]] == cardValue[card[i+3][0]] {
+			four = cardValue[card[i+3][0]]
+			if i == 0 {
+				high = cardValue[card[4][0]]
+			} else {
+				high = cardValue[card[0][0]]
+			}
+		}
+	}
+	return
+}
+
+// Test three/pairthree
+func testCardThree(card []string) (three, pairthree, high int) {
+	for i := 0; i < 3; i++ {
+		if cardValue[card[i][0]] == cardValue[card[i+2][0]] {
+			three = cardValue[card[i+2][0]]
+			if i == 0 && cardValue[card[3][0]] == cardValue[card[4][0]] {
+				pairthree = cardValue[card[4][0]]
+			} else if i == 2 && cardValue[card[0][0]] == cardValue[card[1][0]] {
+				pairthree = cardValue[card[1][0]]
+			}
+		}
+	}
+	for i := 4; i >= 0; i-- {
+		if cardValue[card[i][0]] != three {
+			high = cardValue[card[i][0]]
+		}
+	}
+	return
+}
+
+// Test pair/pair2
+func testCardPair(card []string) (pair, pair2, high int) {
+	for i := 0; i < 4; i++ {
+		if cardValue[card[i][0]] == cardValue[card[i+1][0]] {
+			if pair == 0 {
+				pair = cardValue[card[i+1][0]]
+			} else {
+				pair2 = cardValue[card[i+1][0]]
+			}
+		}
+	}
+	for i := 4; i >= 0; i-- {
+		if cardValue[card[i][0]] != pair && cardValue[card[i][0]] != pair2 {
+			high = cardValue[card[i][0]]
+			break
+		}
+	}
+	return
+}
+
+// Test straight
+func testCardStraight(card []string) (straight int) {
+	var i int
+	for i = 1; i < 5 && cardValue[card[i][0]] == cardValue[card[0][0]]+i; i++ {
+	}
+	if i == 5 {
+		straight = cardValue[card[4][0]]
+	}
+	return
+}
+
+// Test flush
+func testCardFlush(card []string) (flush int) {
+	var i int
+	for i = 1; i < 5 && card[i][1] == card[0][1]; i++ {
+	}
+	if i == 5 {
+		flush = cardValue[card[4][0]]
+	}
+	return
+}
+
+func sortCard(card []string) {
+	for i := 0; i < 4; i++ {
+		for j := i + 1; j < 5; j++ {
+			if cardValue[card[i][0]] > cardValue[card[j][0]] {
+				card[i], card[j] = card[j], card[i]
+			}
+		}
+	}
 }
 
 // Problem 55 - Lychrel numbers

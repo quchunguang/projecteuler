@@ -28,6 +28,18 @@ func PowSum(nlist []int, m int) int {
 	return sum
 }
 
+func EqualInts(a, b []int) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i := 0; i < len(a); i++ {
+		if a[i] != b[i] {
+			return false
+		}
+	}
+	return true
+}
+
 // Check if v in an asc-sorted int slice
 func InInts(slice []int, v int) bool {
 	index := sort.SearchInts(slice, v)

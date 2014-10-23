@@ -57,10 +57,10 @@ func main() {
 	// fmt.Println(projecteuler.PE49())
 	// fmt.Println(projecteuler.PE50(1e6))
 
-	fmt.Println(projecteuler.PE51())
+	// fmt.Println(projecteuler.PE51())
 	// fmt.Println(projecteuler.PE52())
 	// fmt.Println(projecteuler.PE53(1e6))
-	// fmt.Println(projecteuler.PE54())
+	fmt.Println(projecteuler.PE54("p054_poker.txt"))
 	// fmt.Println(projecteuler.PE55(1e4))
 	// fmt.Println(projecteuler.PE56(100))
 	// fmt.Println(projecteuler.PE57(1000))
