@@ -62,42 +62,6 @@ func IsPalindromeBytes(s []byte) bool {
 }
 
 //////
-var SumSubStrDiv int = 0
-
-func IsSubStrDiv(strnum string) bool {
-	d234, _ := strconv.Atoi(strnum[1:4])
-	if d234%2 != 0 {
-		return false
-	}
-	d345, _ := strconv.Atoi(strnum[2:5])
-	if d345%3 != 0 {
-		return false
-	}
-	d456, _ := strconv.Atoi(strnum[3:6])
-	if d456%5 != 0 {
-		return false
-	}
-	d567, _ := strconv.Atoi(strnum[4:7])
-	if d567%7 != 0 {
-		return false
-	}
-	d678, _ := strconv.Atoi(strnum[5:8])
-	if d678%11 != 0 {
-		return false
-	}
-	d789, _ := strconv.Atoi(strnum[6:9])
-	if d789%13 != 0 {
-		return false
-	}
-	d890, _ := strconv.Atoi(strnum[7:10])
-	if d890%17 != 0 {
-		return false
-	}
-	fmt.Println(strnum)
-	return true
-}
-
-//////
 func StrsEquals(a, b []string) bool {
 	if len(a) != len(b) {
 		return false
@@ -184,4 +148,50 @@ func ScoreWord(word string) (ret int) {
 		ret += int(c - 0x40)
 	}
 	return
+}
+
+// Convert digits string to []int
+// ex. "135" -> [1, 3, 5]
+func DigitsInts(digits string) (ret []int) {
+	for _, c := range digits {
+		ret = append(ret, int(c-0x30))
+	}
+	return
+}
+
+// Convert digits string (as locations start with 1) to []bool
+// ex. "135", 6 -> {true, false, true, false, true, false}
+func TrueDigits(digits string, length int) []bool {
+	zeroones := make([]bool, length)
+	for i := 0; i < len(digits); i++ {
+		zeroones[digits[i]-0x30-1] = true
+	}
+	return zeroones
+}
+
+// "123456" , {true, false, true, false, true, false} -> "135", "246"
+func SplitDigits(digits string, zeroone []bool) (truestr, falsestr string) {
+	if len(digits) != len(zeroone) {
+		fmt.Println(digits, zeroone)
+		fmt.Println("SplitDigits() needs same length!")
+	}
+	for i := 0; i < len(digits); i++ {
+		if zeroone[i] {
+			truestr += string(digits[i])
+		} else {
+			falsestr += string(digits[i])
+		}
+	}
+	return
+}
+
+// "222222" -> true; "222322" -> false
+func IsSameStr(s string) bool {
+	head := s[0]
+	for i := 1; i < len(s); i++ {
+		if head != s[i] {
+			return false
+		}
+	}
+	return true
 }

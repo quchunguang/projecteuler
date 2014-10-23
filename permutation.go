@@ -3,7 +3,6 @@ package projecteuler
 import (
 	"fmt"
 	"sort"
-	"strconv"
 )
 
 //////
@@ -41,95 +40,40 @@ func IsPermutations(a, b int) bool {
 	return IntsEquals(ma, mb)
 }
 
-//////
-var CoinSetCents = map[rune]int{'a': 200, 'b': 100, 'c': 50, 'd': 20, 'e': 10, 'f': 5, 'g': 2, 'h': 1}
-var CountPlanCoin int = 0
-
-func PlanCoin(coinset string, remain int, preset string) {
-	if remain == 0 {
-		// Found one way
-		// fmt.Println(preset)
-		CountPlanCoin++
-		return
-	}
-	if len(coinset) == 0 {
-		return
-	}
-	c := rune(coinset[0])
-	r := remain
-	p := preset
-	for j := 0; r >= 0; j++ {
-		PlanCoin(coinset[1:], r, p)
-		r = r - CoinSetCents[c]
-		p = p + string(c)
-	}
-}
-
-//////
-var PandigitalProducts []int
-
-func PandigitalProduct(ret string) {
-	var sa, sb, sc string
-	var a, b, c int
-
-	// There are only 3 possible divides of a given permutation
-	//1,3,5
-	sa, sb, sc = ret[0:1], ret[1:4], ret[4:]
-	a, _ = strconv.Atoi(sa)
-	b, _ = strconv.Atoi(sb)
-	c, _ = strconv.Atoi(sc)
-	if a*b == c {
-		fmt.Println(a, ":", b, ":", c)
-		InsertUniq(&PandigitalProducts, c)
-	}
-
-	//1,4,4
-	sa, sb, sc = ret[0:1], ret[1:5], ret[5:]
-	a, _ = strconv.Atoi(sa)
-	b, _ = strconv.Atoi(sb)
-	c, _ = strconv.Atoi(sc)
-	if a*b == c {
-		fmt.Println(a, ":", b, ":", c)
-		InsertUniq(&PandigitalProducts, c)
-	}
-
-	//2,3,4
-	sa, sb, sc = ret[0:2], ret[2:5], ret[5:]
-	a, _ = strconv.Atoi(sa)
-	b, _ = strconv.Atoi(sb)
-	c, _ = strconv.Atoi(sc)
-	if a*b == c {
-		fmt.Println(a, ":", b, ":", c)
-		InsertUniq(&PandigitalProducts, c)
-	}
-}
-func PermutationPandigital(pandigital string, n int, prefix string) {
-	if n == 1 {
-		for _, c := range pandigital {
+// Permutation n, m of charset string.
+// n == len(charset) >= m
+// Every result (as string) will processed by PermStrCallback.
+func PermStr(charset string, m int, prefix string) {
+	if m == 1 {
+		for _, c := range charset {
 			ret := prefix + string(c)
-			PandigitalProduct(ret)
+			PermStrCallback(ret)
 		}
 		return
 	}
-	for i, c := range pandigital {
-		PermutationPandigital(pandigital[:i]+pandigital[i+1:], n-1, prefix+string(c))
+	for i, c := range charset {
+		PermStr(charset[:i]+charset[i+1:], m-1, prefix+string(c))
 	}
 }
 
-// len(alphabet) >= n
-func PermutationStr(alphabet string, n int, prefix string) {
-	if n == 1 {
-		for _, c := range alphabet {
-			ret := prefix + string(c)
-			// Do something with ret
-			if IsSubStrDiv(ret) {
-				subStrDiv, _ := strconv.Atoi(ret)
-				SumSubStrDiv += subStrDiv
-			}
+var PermStrCallback func(string)
+
+// Combination n, m of charset string.
+// n == len(charset) >= m
+// Every result (as string) will processed by CombStrCallback.
+func CombStr(charset string, m int, prefix string) {
+	if m == 1 {
+		for _, c := range charset {
+			CombStrCallback(prefix + string(c))
 		}
 		return
 	}
-	for i, c := range alphabet {
-		PermutationStr(alphabet[:i]+alphabet[i+1:], n-1, prefix+string(c))
+	// Select first
+	CombStr(charset[1:], m-1, prefix+string(charset[0]))
+	// Not select first
+	if len(charset) > m {
+		CombStr(charset[1:], m, prefix)
 	}
 }
+
+var CombStrCallback func(string)

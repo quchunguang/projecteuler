@@ -19,7 +19,56 @@ import (
 //
 // Find the smallest prime which, by replacing part of the number (not necessarily adjacent digits) with the same digit, is part of an eight prime value family.
 func PE51() (ret int) {
+	// No result  found in 5-digit numbers
+
+	// Finding in 6-digit numbers
+	GenPrimes(1e6)
+	CombStrCallback = checkPrimeSelect
+	for i := 1; i <= 6; i++ {
+		CombStr("123456", i, "")
+	}
+	ret = pe51ret
 	return
+}
+
+var pe51ret int
+
+func checkPrimeSelect(s string) {
+	selects := TrueDigits(s, 6)
+	strmap := make(map[string]int)
+	for _, p := range primes {
+		if p < 100000 {
+			continue
+		}
+		sp := strconv.Itoa(p)
+		check, key := SplitDigits(sp, selects)
+		if IsSameStr(check) {
+			strmap[key]++
+		}
+	}
+	for k, v := range strmap {
+		if v >= 8 {
+			// Found!!! Generate result.
+			for i := 0; i <= 9; i++ {
+				res := ""
+				u := 0
+				for j := 0; j < 6; j++ {
+					if selects[j] {
+						res += strconv.Itoa(i)
+					} else {
+						res += string(k[u])
+						u++
+					}
+				}
+				ires, _ := strconv.Atoi(res)
+				if InInts(primes, ires) {
+					// Find first (smallest) prime and return.
+					pe51ret = ires
+					return
+				}
+			}
+		}
+	}
 }
 
 // Problem 52 - Permuted multiples

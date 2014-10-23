@@ -1136,9 +1136,32 @@ func genlimit(n int) int {
 func PE31(N int) (ret int) {
 	coinset := "abcdefgh" // This will coast 2.5s
 	// coinset := "hgfedcba" // This will coast 4.2s
-	PlanCoin(coinset, N, "")
-	ret = CountPlanCoin
+	planCoin(coinset, N, "")
+	ret = pe31ret
 	return
+}
+
+var coinSetCents = map[rune]int{'a': 200, 'b': 100, 'c': 50, 'd': 20, 'e': 10, 'f': 5, 'g': 2, 'h': 1}
+var pe31ret int = 0
+
+func planCoin(coinset string, remain int, preset string) {
+	if remain == 0 {
+		// Found one way
+		// fmt.Println(preset)
+		pe31ret++
+		return
+	}
+	if len(coinset) == 0 {
+		return
+	}
+	c := rune(coinset[0])
+	r := remain
+	p := preset
+	for j := 0; r >= 0; j++ {
+		planCoin(coinset[1:], r, p)
+		r = r - coinSetCents[c]
+		p = p + string(c)
+	}
 }
 
 // Problem 32 - Pandigital products
@@ -1151,10 +1174,49 @@ func PE31(N int) (ret int) {
 // HINT: Some products can be obtained in more than one way so be sure to only include it once in your sum.
 func PE32() (ret int) {
 	// Permutation (9,9) of "123456789"
-	PermutationPandigital("123456789", 9, "")
-	ret = SumInts(PandigitalProducts)
+	PermStrCallback = pandigitalProduct
+	PermStr("123456789", 9, "")
+	ret = SumInts(pandigitalProducts)
 
 	return
+}
+
+var pandigitalProducts []int
+
+func pandigitalProduct(ret string) {
+	var sa, sb, sc string
+	var a, b, c int
+
+	// There are only 3 possible divides of a given permutation
+	//1,3,5
+	sa, sb, sc = ret[0:1], ret[1:4], ret[4:]
+	a, _ = strconv.Atoi(sa)
+	b, _ = strconv.Atoi(sb)
+	c, _ = strconv.Atoi(sc)
+	if a*b == c {
+		fmt.Println(a, ":", b, ":", c)
+		InsertUniq(&pandigitalProducts, c)
+	}
+
+	//1,4,4
+	sa, sb, sc = ret[0:1], ret[1:5], ret[5:]
+	a, _ = strconv.Atoi(sa)
+	b, _ = strconv.Atoi(sb)
+	c, _ = strconv.Atoi(sc)
+	if a*b == c {
+		fmt.Println(a, ":", b, ":", c)
+		InsertUniq(&pandigitalProducts, c)
+	}
+
+	//2,3,4
+	sa, sb, sc = ret[0:2], ret[2:5], ret[5:]
+	a, _ = strconv.Atoi(sa)
+	b, _ = strconv.Atoi(sb)
+	c, _ = strconv.Atoi(sc)
+	if a*b == c {
+		fmt.Println(a, ":", b, ":", c)
+		InsertUniq(&pandigitalProducts, c)
+	}
 }
 
 // Problem 33 - Digit canceling fractions
@@ -1468,9 +1530,52 @@ func PE42(filename string) (ret int) {
 //
 // Find the sum of all 0 to 9 pandigital numbers with this property.
 func PE43() (ret int) {
-	PermutationStr("0123456789", 10, "")
-	ret = SumSubStrDiv
+	PermStrCallback = checkSubStrDiv
+	PermStr("0123456789", 10, "")
+	ret = sumSubStrDiv
 	return
+}
+
+var sumSubStrDiv int = 0
+
+func checkSubStrDiv(ret string) {
+	if isSubStrDiv(ret) {
+		subStrDiv, _ := strconv.Atoi(ret)
+		sumSubStrDiv += subStrDiv
+	}
+}
+
+func isSubStrDiv(strnum string) bool {
+	d234, _ := strconv.Atoi(strnum[1:4])
+	if d234%2 != 0 {
+		return false
+	}
+	d345, _ := strconv.Atoi(strnum[2:5])
+	if d345%3 != 0 {
+		return false
+	}
+	d456, _ := strconv.Atoi(strnum[3:6])
+	if d456%5 != 0 {
+		return false
+	}
+	d567, _ := strconv.Atoi(strnum[4:7])
+	if d567%7 != 0 {
+		return false
+	}
+	d678, _ := strconv.Atoi(strnum[5:8])
+	if d678%11 != 0 {
+		return false
+	}
+	d789, _ := strconv.Atoi(strnum[6:9])
+	if d789%13 != 0 {
+		return false
+	}
+	d890, _ := strconv.Atoi(strnum[7:10])
+	if d890%17 != 0 {
+		return false
+	}
+	fmt.Println(strnum)
+	return true
 }
 
 // Problem 44 - Pentagon numbers
