@@ -11,12 +11,43 @@ import (
 	"strings"
 )
 
-//////
+// Problem 51 - Prime digit replacements
+//
+// By replacing the 1st digit of the 2-digit number *3, it turns out that six of the nine possible values: 13, 23, 43, 53, 73, and 83, are all prime.
+//
+// By replacing the 3rd and 4th digits of 56**3 with the same digit, this 5-digit number is the first example having seven primes among the ten generated numbers, yielding the family: 56003, 56113, 56333, 56443, 56663, 56773, and 56993. Consequently 56003, being the first member of this family, is the smallest prime with this property.
+//
+// Find the smallest prime which, by replacing part of the number (not necessarily adjacent digits) with the same digit, is part of an eight prime value family.
+func PE51() (ret int) {
+	return
+}
+
+// Problem 52 - Permuted multiples
+//
+// It can be seen that the number, 125874, and its double, 251748, contain exactly the same digits, but in a different order.
+//
+// Find the smallest positive integer, x, such that 2x, 3x, 4x, 5x, and 6x, contain the same digits.
 func PE52() int {
 	return 142857
 }
 
-//////
+// Problem 53 - Combinatoric selections
+//
+// There are exactly ten ways of selecting three from five, 12345:
+//
+// 123, 124, 125, 134, 135, 145, 234, 235, 245, and 345
+//
+// In combinatorics, we use the notation, 5C3 = 10.
+//
+// In general,
+// nCr =
+// n!
+// r!(n−r)!
+// 	,where r ≤ n, n! = n×(n−1)×...×3×2×1, and 0! = 1.
+//
+// It is not until n = 23, that a value exceeds one-million: 23C10 = 1144066.
+//
+// How many, not necessarily distinct, values of  nCr, for 1 ≤ n ≤ 100, are greater than one-million?
 func PE53(N int) (ret int) {
 	for n := 1; n <= 100; n++ {
 		for r := 1; r <= n; r++ {
@@ -30,7 +61,31 @@ func PE53(N int) (ret int) {
 	return
 }
 
-//////
+// Problem 54 - Poker hands
+//
+func PE54() (ret int) {
+	return
+}
+
+// Problem 55 - Lychrel numbers
+//
+// If we take 47, reverse and add, 47 + 74 = 121, which is palindromic.
+//
+// Not all numbers produce palindromes so quickly. For example,
+//
+// 349 + 943 = 1292,
+// 1292 + 2921 = 4213
+// 4213 + 3124 = 7337
+//
+// That is, 349 took three iterations to arrive at a palindrome.
+//
+// Although no one has proved it yet, it is thought that some numbers, like 196, never produce a palindrome. A number that never forms a palindrome through the reverse and add process is called a Lychrel number. Due to the theoretical nature of these numbers, and for the purpose of this problem, we shall assume that a number is Lychrel until proven otherwise. In addition you are given that for every number below ten-thousand, it will either (i) become a palindrome in less than fifty iterations, or, (ii) no one, with all the computing power that exists, has managed so far to map it to a palindrome. In fact, 10677 is the first number to be shown to require over fifty iterations before producing a palindrome: 4668731596684224866951378664 (53 iterations, 28-digits).
+//
+// Surprisingly, there are palindromic numbers that are themselves Lychrel numbers; the first example is 4994.
+//
+// How many Lychrel numbers are there below ten-thousand?
+//
+// NOTE: Wording was modified slightly on 24 April 2007 to emphasise the theoretical nature of Lychrel numbers.
 func PE55(N int) (ret int) {
 	for n := 1; n < N; n++ {
 		if IsLychrel(n) {
@@ -40,7 +95,11 @@ func PE55(N int) (ret int) {
 	return
 }
 
-//////
+// Problem 56 - Powerful digit sum
+//
+// A googol (10^100) is a massive number: one followed by one-hundred zeros; 100^100 is almost unimaginably large: one followed by two-hundred zeros. Despite their size, the sum of the digits in each number is only 1.
+//
+// Considering natural numbers of the form, ab, where a, b < 100, what is the maximum digital sum?
 func PE56(N int) (ret int) {
 	for a := 1; a < N; a++ {
 		for b := 1; b < N; b++ {
@@ -54,18 +113,22 @@ func PE56(N int) (ret int) {
 	return
 }
 
-//////
-func PE57S(N int) (ret int) {
-	var a, b int = 1, 2
-	for i := 2; i <= N; i++ {
-		a, b = b, 2*b+a
-		// fmt.Println(a+b, "/", b, len(strconv.Itoa(a+b)), len(strconv.Itoa(b)))
-		if len(strconv.Itoa(a+b)) > len(strconv.Itoa(b)) {
-			ret++
-		}
-	}
-	return
-}
+// Problem 57 - Square root convergents
+//
+// It is possible to show that the square root of two can be expressed as an infinite continued fraction.
+//
+// √ 2 = 1 + 1/(2 + 1/(2 + 1/(2 + ... ))) = 1.414213...
+//
+// By expanding this for the first four iterations, we get:
+//
+// 1 + 1/2 = 3/2 = 1.5
+// 1 + 1/(2 + 1/2) = 7/5 = 1.4
+// 1 + 1/(2 + 1/(2 + 1/2)) = 17/12 = 1.41666...
+// 1 + 1/(2 + 1/(2 + 1/(2 + 1/2))) = 41/29 = 1.41379...
+//
+// The next three expansions are 99/70, 239/169, and 577/408, but the eighth expansion, 1393/985, is the first example where the number of digits in the numerator exceeds the number of digits in the denominator.
+//
+// In the first one-thousand expansions, how many fractions contain a numerator with more digits than denominator?
 func PE57(N int) (ret int) {
 	a := BigNum("1")
 	b := BigNum("2")
@@ -81,7 +144,33 @@ func PE57(N int) (ret int) {
 	return
 }
 
-//////
+func PE57S(N int) (ret int) {
+	var a, b int = 1, 2
+	for i := 2; i <= N; i++ {
+		a, b = b, 2*b+a
+		// fmt.Println(a+b, "/", b, len(strconv.Itoa(a+b)), len(strconv.Itoa(b)))
+		if len(strconv.Itoa(a+b)) > len(strconv.Itoa(b)) {
+			ret++
+		}
+	}
+	return
+}
+
+// Problem 58 - Spiral primes
+//
+// Starting with 1 and spiralling anticlockwise in the following way, a square spiral with side length 7 is formed.
+//
+// 37 36 35 34 33 32 31
+// 38 17 16 15 14 13 30
+// 39 18  5  4  3 12 29
+// 40 19  6  1  2 11 28
+// 41 20  7  8  9 10 27
+// 42 21 22 23 24 25 26
+// 43 44 45 46 47 48 49
+//
+// It is interesting to note that the odd squares lie along the bottom right diagonal, but what is more interesting is that 8 out of the 13 numbers lying along both diagonals are prime; that is, a ratio of 8/13 ≈ 62%.
+//
+// If one complete new layer is wrapped around the spiral above, a square spiral with side length 9 will be formed. If this process is continued, what is the side length of the square spiral for which the ratio of primes along both diagonals first falls below 10%?
 // Run time about 1 hour
 func PE58() int {
 	var n, step int
@@ -127,27 +216,17 @@ func PE58() int {
 	}
 }
 
-//////
-func Decrypt(key []byte, cipher []byte) []byte {
-	ret := make([]byte, len(cipher))
-	for i := 0; i < len(cipher); i += 3 {
-		ret[i] = cipher[i] ^ key[0]
-		if i+1 < len(cipher) {
-			ret[i+1] = cipher[i+1] ^ key[1]
-		}
-		if i+2 < len(cipher) {
-			ret[i+2] = cipher[i+2] ^ key[2]
-		}
-	}
-	return ret
-}
-func GuessEnglishText(text []byte) (ret int) {
-	wordlist := []string{" the ", " be ", " to ", " of ", " and ", " a ", " in ", " that ", " have "}
-	for _, word := range wordlist {
-		ret += strings.Count(string(text), word)
-	}
-	return
-}
+// Problem 59 - XOR decryption
+//
+// Each character on a computer is assigned a unique code and the preferred standard is ASCII (American Standard Code for Information Interchange). For example, uppercase A = 65, asterisk (*) = 42, and lowercase k = 107.
+//
+// A modern encryption method is to take a text file, convert the bytes to ASCII, then XOR each byte with a given value, taken from a secret key. The advantage with the XOR function is that using the same encryption key on the cipher text, restores the plain text; for example, 65 XOR 42 = 107, then 107 XOR 42 = 65.
+//
+// For unbreakable encryption, the key is the same length as the plain text message, and the key is made up of random bytes. The user would keep the encrypted message and the encryption key in different locations, and without both "halves", it is impossible to decrypt the message.
+//
+// Unfortunately, this method is impractical for most users, so the modified method is to use a password as a key. If the password is shorter than the message, which is likely, the key is repeated cyclically throughout the message. The balance for this method is using a sufficiently long password key for security, but short enough to be memorable.
+//
+// Your task has been made easy, as the encryption key consists of three lower case characters. Using cipher.txt (right click and 'Save Link/Target As...'), a file containing the encrypted ASCII codes, and the knowledge that the plain text must contain common English words, decrypt the message and find the sum of the ASCII values in the original text.
 func PE59(cipherfile string) (ret int) {
 	cipher := CSV(cipherfile)
 	key := []byte("aaa")
@@ -181,7 +260,80 @@ func PE59(cipherfile string) (ret int) {
 	return
 }
 
-//////
+func Decrypt(key []byte, cipher []byte) []byte {
+	ret := make([]byte, len(cipher))
+	for i := 0; i < len(cipher); i += 3 {
+		ret[i] = cipher[i] ^ key[0]
+		if i+1 < len(cipher) {
+			ret[i+1] = cipher[i+1] ^ key[1]
+		}
+		if i+2 < len(cipher) {
+			ret[i+2] = cipher[i+2] ^ key[2]
+		}
+	}
+	return ret
+}
+
+func GuessEnglishText(text []byte) (ret int) {
+	wordlist := []string{" the ", " be ", " to ", " of ", " and ", " a ", " in ", " that ", " have "}
+	for _, word := range wordlist {
+		ret += strings.Count(string(text), word)
+	}
+	return
+}
+
+// Problem 60 - Prime pair sets
+//
+func PE60() (ret int) {
+	return
+}
+
+// Problem 61 - Cyclical figurate numbers
+//
+// Triangle, square, pentagonal, hexagonal, heptagonal, and octagonal numbers are all figurate (polygonal) numbers and are generated by the following formulae:
+// Triangle 	  	P3,n=n(n+1)/2 	  	1, 3, 6, 10, 15, ...
+// Square 	  	P4,n=n2 	  	1, 4, 9, 16, 25, ...
+// Pentagonal 	  	P5,n=n(3n−1)/2 	  	1, 5, 12, 22, 35, ...
+// Hexagonal 	  	P6,n=n(2n−1) 	  	1, 6, 15, 28, 45, ...
+// Heptagonal 	  	P7,n=n(5n−3)/2 	  	1, 7, 18, 34, 55, ...
+// Octagonal 	  	P8,n=n(3n−2) 	  	1, 8, 21, 40, 65, ...
+//
+// The ordered set of three 4-digit numbers: 8128, 2882, 8281, has three interesting properties.
+//
+//     The set is cyclic, in that the last two digits of each number is the first two digits of the next number (including the last number with the first).
+//     Each polygonal type: triangle (P3,127=8128), square (P4,91=8281), and pentagonal (P5,44=2882), is represented by a different number in the set.
+//     This is the only set of 4-digit numbers with this property.
+//
+// Find the sum of the only ordered set of six cyclic 4-digit numbers for which each polygonal type: triangle, square, pentagonal, hexagonal, heptagonal, and octagonal, is represented by a different number in the set.
+func PE61_wrong() (ret int) {
+	GenPolygonals4()
+
+	// Create adj map from polygonals
+	polymap := make(map[int][]int)
+	var keys []int
+	for _, v := range polygonals {
+		polymap[v/100] = append(polymap[v/100], v%100)
+		InsertUniq(&keys, v/100)
+	}
+
+	// Display by order
+	sort.Ints(keys)
+	// for _, k := range keys {
+	//  fmt.Println(k, polymap[k])
+	// }
+
+	// for k, _ := range polymap {
+	//  set := DeepSet(polymap, k,6)
+	//  for _, v := range set {
+	//      if v == k {
+	//          fmt.Println("FOUND!!!")
+	//      }
+	//  }
+	// }
+	Permutation(keys, polymap)
+	return
+}
+
 var polygonals []int
 
 func Polygonals(n int) (ret [6]int) {
@@ -298,36 +450,12 @@ func DeepSet(slice map[int][]int, seed int, deep int) []int {
 	}
 	return from
 }
-func PE61_wrong() (ret int) {
-	GenPolygonals4()
 
-	// Create adj map from polygonals
-	polymap := make(map[int][]int)
-	var keys []int
-	for _, v := range polygonals {
-		polymap[v/100] = append(polymap[v/100], v%100)
-		InsertUniq(&keys, v/100)
-	}
-
-	// Display by order
-	sort.Ints(keys)
-	// for _, k := range keys {
-	//  fmt.Println(k, polymap[k])
-	// }
-
-	// for k, _ := range polymap {
-	//  set := DeepSet(polymap, k,6)
-	//  for _, v := range set {
-	//      if v == k {
-	//          fmt.Println("FOUND!!!")
-	//      }
-	//  }
-	// }
-	Permutation(keys, polymap)
-	return
-}
-
-//////
+// Problem 62 - Cubic permutations
+//
+// The cube, 41063625 (3453), can be permuted to produce two other cubes: 56623104 (3843) and 66430125 (4053). In fact, 41063625 is the smallest cube which has exactly three permutations of its digits which are also cube.
+//
+// Find the smallest cube for which exactly five permutations of its digits are cube.
 func PE62() (ret int) {
 	var i, n int
 	digmap := make(map[string][]int)
@@ -353,7 +481,11 @@ func PE62() (ret int) {
 	return
 }
 
-//////
+// Problem 63 - Powerful digit counts
+//
+// The 5-digit number, 16807=7^5, is also a fifth power. Similarly, the 9-digit number, 134217728=8^9, is a ninth power.
+//
+// How many n-digit positive integers exist which are also an nth power?
 func PE63() (ret int) {
 	for a := 1; a <= 9; a++ {
 		for n := 1; ; n++ {
@@ -368,12 +500,69 @@ func PE63() (ret int) {
 	return
 }
 
-//////
+// Problem 64 - Odd period square roots
+//
+func PE64() (ret int) {
+	return
+}
+
+// Problem 65 - Convergents of e
+//
+func PE65() (ret int) {
+	return
+}
+
+// Problem 66 - Diophantine equation
+//
+func PE66() (ret int) {
+	return
+}
+
+// Problem 67 - Maximum path sum II
+//
+// By starting at the top of the triangle below and moving to adjacent numbers on the row below, the maximum total from top to bottom is 23.
+//
+// 3
+// 7 4
+// 2 4 6
+// 8 5 9 3
+//
+// That is, 3 + 7 + 4 + 9 = 23.
+//
+// Find the maximum total from top to bottom in triangle.txt (right click and 'Save Link/Target As...'), a 15K text file containing a triangle with one-hundred rows.
+//
+// NOTE: This is a much more difficult version of Problem 18. It is not possible to try every route to solve this problem, as there are 299 altogether! If you could check one trillion (1012) routes every second it would take over twenty billion years to check them all. There is an efficient algorithm to solve it. ;o)
 func PE67(filename string) int {
 	return MaxPathSum(filename, 100)
 }
 
-//////
+// Problem 68 - Magic 5-gon ring
+//
+func PE68() (ret int) {
+	return
+}
+
+// Problem 69 - Totient maximum
+//
+// Euler's Totient function, φ(n) [sometimes called the phi function], is used to determine the number of numbers less than n which are relatively prime to n. For example, as 1, 2, 4, 5, 7, and 8, are all less than nine and relatively prime to nine, φ(9)=6.
+// n 	Relatively Prime 	φ(n) 	n/φ(n)
+// 2 	1 	1 	2
+// 3 	1,2 	2 	1.5
+// 4 	1,3 	2 	2
+// 5 	1,2,3,4 	4 	1.25
+// 6 	1,5 	2 	3
+// 7 	1,2,3,4,5,6 	6 	1.1666...
+// 8 	1,3,5,7 	4 	2
+// 9 	1,2,4,5,7,8 	6 	1.5
+// 10 	1,3,7,9 	4 	2.5
+//
+// It can be seen that n=6 produces a maximum n/φ(n) for n ≤ 10.
+//
+// Find the value of n ≤ 1,000,000 for which n/φ(n) is a maximum.
+func PE69() (ret int) {
+	return
+}
+
 func PE69_slow(N int) (ret int) {
 	var max float64 = 0
 	for n := 2; n < N; n++ {
@@ -387,7 +576,175 @@ func PE69_slow(N int) (ret int) {
 	return
 }
 
-//////
+// Problem 70 - Totient permutation
+//
+func PE70() (ret int) {
+	return
+}
+
+// Problem 71 - Ordered fractions
+//
+func PE71() (ret int) {
+	return
+}
+
+// Problem 72 - Counting fractions
+//
+func PE72() (ret int) {
+	return
+}
+
+// Problem 73 - Counting fractions in a range
+//
+func PE73() (ret int) {
+	return
+}
+
+// Problem 74 - Digit factorial chains
+//
+func PE74() (ret int) {
+	return
+}
+
+// Problem 75 - Singular integer right triangles
+//
+func PE75() (ret int) {
+	return
+}
+
+// Problem 76 - Counting summations
+//
+func PE76() (ret int) {
+	return
+}
+
+// Problem 77 - Prime summations
+//
+func PE77() (ret int) {
+	return
+}
+
+// Problem 78 - Coin partitions
+//
+func PE78() (ret int) {
+	return
+}
+
+// Problem 79 - Passcode derivation
+//
+func PE79() (ret int) {
+	return
+}
+
+// Problem 80 - Square root digital expansion
+//
+func PE80() (ret int) {
+	return
+}
+
+// Problem 81 - Path sum: two ways
+//
+func PE81() (ret int) {
+	return
+}
+
+// Problem 82 - Path sum: three ways
+//
+func PE82() (ret int) {
+	return
+}
+
+// Problem 83 - Path sum: four ways
+//
+func PE83() (ret int) {
+	return
+}
+
+// Problem 84 - Monopoly odds
+//
+func PE84() (ret int) {
+	return
+}
+
+// Problem 85 - Counting rectangles
+//
+func PE85() (ret int) {
+	return
+}
+
+// Problem 86 - Cuboid route
+//
+func PE86() (ret int) {
+	return
+}
+
+// Problem 87 - Prime power triples
+//
+func PE87() (ret int) {
+	return
+}
+
+// Problem 88 - Product-sum numbers
+//
+func PE88() (ret int) {
+	return
+}
+
+// Problem 89 - Roman numerals
+//
+func PE89() (ret int) {
+	return
+}
+
+// Problem 90 - Cube digit pairs
+//
+func PE90() (ret int) {
+	return
+}
+
+// Problem 91 - Right triangles with integer coordinates
+//
+func PE91() (ret int) {
+	return
+}
+
+// Problem 92 - Square digit chains
+//
+func PE92() (ret int) {
+	return
+}
+
+// Problem 93 - Arithmetic expressions
+//
+func PE93() (ret int) {
+	return
+}
+
+// Problem 94 - Almost equilateral triangles
+//
+func PE94() (ret int) {
+	return
+}
+
+// Problem 95 - Amicable chains
+//
+func PE95() (ret int) {
+	return
+}
+
+// Problem 96 - Su Doku
+//
+func PE96() (ret int) {
+	return
+}
+
+// Problem 97 - Large non-Mersenne prime
+//
+// The first known prime found to exceed one million digits was discovered in 1999, and is a Mersenne prime of the form 26972593−1; it contains exactly 2,098,960 digits. Subsequently other Mersenne primes, of the form 2p−1, have been found which contain more digits.
+//
+// However, in 2004 there was found a massive non-Mersenne prime which contains 2,357,207 digits: 28433×27830457+1.
+//
+// Find the last ten digits of this prime number.
 func PE97() (ret int) {
 	// ret = 2^7830457
 	ret = 1
@@ -403,7 +760,21 @@ func PE97() (ret int) {
 	return
 }
 
-//////
+// Problem 98 - Anagramic squares
+//
+func PE98() (ret int) {
+	return
+}
+
+// Problem 99 - Largest exponential
+//
+// Comparing two numbers written in index form like 2^11 and 3^7 is not difficult, as any calculator would confirm that 2^11 = 2048 < 3^7 = 2187.
+//
+// However, confirming that 632382^518061 > 519432^525806 would be much more difficult, as both numbers contain over three million digits.
+//
+// Using base_exp.txt (right click and 'Save Link/Target As...'), a 22K text file containing one thousand lines with a base/exponent pair on each line, determine which line number has the greatest numerical value.
+//
+// NOTE: The first two lines in the file represent the numbers in the example given above.
 func PE99(filename string) (ret int) {
 	var maxlog float64 = 0.0
 
@@ -428,5 +799,11 @@ func PE99(filename string) (ret int) {
 			ret = i
 		}
 	}
+	return
+}
+
+// Problem 100 - Arranged probability
+//
+func PE100() (ret int) {
 	return
 }
