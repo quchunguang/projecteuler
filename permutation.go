@@ -44,11 +44,8 @@ func IsPermutations(a, b int) bool {
 // n == len(charset) >= m
 // Every result (as string) will processed by PermStrCallback.
 func PermStr(charset string, m int, prefix string) {
-	if m == 1 {
-		for _, c := range charset {
-			ret := prefix + string(c)
-			PermStrCallback(ret)
-		}
+	if m == 0 {
+		PermStrCallback(prefix)
 		return
 	}
 	for i, c := range charset {
@@ -62,10 +59,8 @@ var PermStrCallback func(string)
 // n == len(charset) >= m
 // Every result (as string) will processed by CombStrCallback.
 func CombStr(charset string, m int, prefix string) {
-	if m == 1 {
-		for _, c := range charset {
-			CombStrCallback(prefix + string(c))
-		}
+	if m == 0 {
+		CombStrCallback(prefix)
 		return
 	}
 	// Select first

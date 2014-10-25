@@ -578,7 +578,9 @@ func GuessEnglishText(text []byte) (ret int) {
 // The primes 3, 7, 109, and 673, are quite remarkable. By taking any two primes and concatenating them in any order the result will always be prime. For example, taking 7 and 109, both 7109 and 1097 are prime. The sum of these four primes, 792, represents the lowest sum for a set of four primes with this property.
 //
 // Find the lowest sum for a set of five primes for which any two primes concatenate to produce another prime.
-// Note: This program will never stop. result 26033 (first length 5) appeared at about 60 seconds.
+// Note:
+// * This program can NOT ENSURE result is right.
+// * This program will never stop. result 26033 (first length 5) appeared at about 60 seconds.
 //   5 8389 5 [13 5197 5701 6733 8389] 26033 26033
 func PE60() (ret int) {
 	var data [][]string
@@ -657,8 +659,82 @@ func canJoinSet(set []string, value int) bool {
 //     This is the only set of 4-digit numbers with this property.
 //
 // Find the sum of the only ordered set of six cyclic 4-digit numbers for which each polygonal type: triangle, square, pentagonal, hexagonal, heptagonal, and octagonal, is represented by a different number in the set.
-func PE61_wrong() (ret int) {
-	GenPolygonals4()
+
+var permPE61 []string
+
+func PE61() (ret int) {
+	// Generate layer based data
+	polygonali := GenPolygonals4i()
+
+	// RoundPermStr("012345") == "0" + PermStr("12345",5)
+	PermStrCallback = callbackPE61
+	PermStr("12345", 5, "")
+
+	var polygonalio [6][]int
+	polygonalio[0] = polygonali[0]
+	for _, perm := range permPE61 {
+		for i, c := range perm {
+			polygonalio[i+1] = polygonali[c-0x30]
+		}
+		// This will cause stack overflow, WHY?
+		TracePath(polygonalio, []int{})
+	}
+	return
+}
+
+func callbackPE61(ret string) {
+	permPE61 = append(permPE61, ret)
+}
+
+func TracePath(polygonali [6][]int, prefix []int) {
+	round := len(prefix)
+	if round == 0 {
+		for _, v := range polygonali[round] {
+			TracePath(polygonali, []int{v})
+		}
+		return
+	}
+	if round == 7 {
+		if prefix[0] == prefix[6] {
+			// Found!!!
+			fmt.Println(prefix[:6], SumInts(prefix[:6]))
+		}
+		return
+	}
+	for _, v := range polygonali[round%6] {
+		if connected(prefix[round-1], v) {
+			prefix = append(prefix, v)
+			TracePath(polygonali, prefix)
+		}
+	}
+	return
+}
+
+func connected(a, b int) bool {
+	if a%100 == b/100 {
+		return true
+	}
+	return false
+}
+
+func GenPolygonals4i() (polygonals [6][]int) {
+	for i := 1; ; i++ {
+		s := Polygonals(i)
+		if s[0] > 1e4 {
+			return
+		}
+		for j := 0; j < 6; j++ {
+			if s[j] >= 1e3 && s[j] < 1e4 {
+				InsertUniq(&polygonals[j], s[j])
+			}
+		}
+	}
+	return
+}
+
+//////
+func PE61_missunderstanding() (ret int) {
+	polygonals := GenPolygonals4()
 
 	// Create adj map from polygonals
 	polymap := make(map[int][]int)
@@ -686,8 +762,6 @@ func PE61_wrong() (ret int) {
 	return
 }
 
-var polygonals []int
-
 func Polygonals(n int) (ret [6]int) {
 	ret[0] = n * (n + 1) / 2   // Triangle   P(3,n)
 	ret[1] = n * n             // Square     P(4,n)
@@ -698,7 +772,7 @@ func Polygonals(n int) (ret [6]int) {
 	return
 }
 
-func GenPolygonals4() {
+func GenPolygonals4() (polygonals []int) {
 	for i := 1; ; i++ {
 		s := Polygonals(i)
 		if s[0] > 1e4 {
@@ -710,7 +784,9 @@ func GenPolygonals4() {
 			}
 		}
 	}
+	return
 }
+
 func InsertUniq(slice *[]int, value int) {
 	for _, v := range *slice {
 		if v == value {
@@ -854,6 +930,28 @@ func PE63() (ret int) {
 
 // Problem 64 - Odd period square roots
 //
+// All square roots are periodic when written as continued fractions and can be written in the form:
+// √N = [a0; (a1,a2,a3, ...)]
+//
+// For example, let us consider √23.
+// It can be seen that the sequence is repeating. For conciseness, we use the notation √23 = [4;(1,3,1,8)], to indicate that the block (1,3,1,8) repeats indefinitely.
+//
+// The first ten continued fraction representations of (irrational) square roots are:
+//
+// √2=[1;(2)], period=1
+// √3=[1;(1,2)], period=2
+// √5=[2;(4)], period=1
+// √6=[2;(2,4)], period=2
+// √7=[2;(1,1,1,4)], period=4
+// √8=[2;(1,4)], period=2
+// √10=[3;(6)], period=1
+// √11=[3;(3,6)], period=2
+// √12= [3;(2,6)], period=2
+// √13=[3;(1,1,1,1,6)], period=5
+//
+// Exactly four continued fractions, for N ≤ 13, have an odd period.
+//
+// How many continued fractions for N ≤ 10000 have an odd period?
 func PE64() (ret int) {
 	return
 }
