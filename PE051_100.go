@@ -659,38 +659,32 @@ func canJoinSet(set []string, value int) bool {
 //     This is the only set of 4-digit numbers with this property.
 //
 // Find the sum of the only ordered set of six cyclic 4-digit numbers for which each polygonal type: triangle, square, pentagonal, hexagonal, heptagonal, and octagonal, is represented by a different number in the set.
-
-var permPE61 []string
-
 func PE61() (ret int) {
-	// Generate layer based data
-	polygonali := GenPolygonals4i()
+	// Generate layer based data with origin sort
+	GenPolygonals4i()
 
-	// RoundPermStr("012345") == "0" + PermStr("12345",5)
 	PermStrCallback = callbackPE61
-	PermStr("12345", 5, "")
+	RoundPermStr("012345")
 
-	var polygonalio [6][]int
-	polygonalio[0] = polygonali[0]
-	for _, perm := range permPE61 {
-		for i, c := range perm {
-			polygonalio[i+1] = polygonali[c-0x30]
-		}
-		// This will cause stack overflow, WHY?
-		TracePath(polygonalio, []int{})
-	}
 	return
 }
 
+var polygonali [6][]int  // origin sort of data
+var polygonalio [6][]int // working sort of data
+
 func callbackPE61(ret string) {
-	permPE61 = append(permPE61, ret)
+	// Use ret set as index to sort data to polygonalio
+	for i, c := range ret {
+		polygonalio[i] = polygonali[c-0x30]
+	}
+	TracePath([]int{})
 }
 
-func TracePath(polygonali [6][]int, prefix []int) {
+func TracePath(prefix []int) {
 	round := len(prefix)
 	if round == 0 {
-		for _, v := range polygonali[round] {
-			TracePath(polygonali, []int{v})
+		for _, v := range polygonalio[round] {
+			TracePath([]int{v})
 		}
 		return
 	}
@@ -701,10 +695,9 @@ func TracePath(polygonali [6][]int, prefix []int) {
 		}
 		return
 	}
-	for _, v := range polygonali[round%6] {
+	for _, v := range polygonalio[round%6] {
 		if connected(prefix[round-1], v) {
-			prefix = append(prefix, v)
-			TracePath(polygonali, prefix)
+			TracePath(append(prefix, v))
 		}
 	}
 	return
@@ -717,7 +710,7 @@ func connected(a, b int) bool {
 	return false
 }
 
-func GenPolygonals4i() (polygonals [6][]int) {
+func GenPolygonals4i() {
 	for i := 1; ; i++ {
 		s := Polygonals(i)
 		if s[0] > 1e4 {
@@ -725,11 +718,10 @@ func GenPolygonals4i() (polygonals [6][]int) {
 		}
 		for j := 0; j < 6; j++ {
 			if s[j] >= 1e3 && s[j] < 1e4 {
-				InsertUniq(&polygonals[j], s[j])
+				InsertUniq(&polygonali[j], s[j])
 			}
 		}
 	}
-	return
 }
 
 //////
