@@ -119,3 +119,18 @@ func BigLen(a []int64) (ret int) {
 	ret += i
 	return
 }
+
+// Sum of all digits of a BigNum
+func BigDigSum(a []int64) (ret int64) {
+	for _, v := range a {
+		ret += DigSum(v)
+	}
+	return
+}
+func DigSum(a int64) (ret int64) {
+	for a > 0 {
+		ret += a % 10
+		a /= 10
+	}
+	return
+}

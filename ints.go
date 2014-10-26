@@ -124,19 +124,11 @@ func PowerTail(a int, b int) (ret int) {
 	return
 }
 
-//////
 func DeleteIndex(f []int, i int) []int {
 	return append(f[:i], f[i+1:]...)
 }
 
 //////
-func DigSum(a int64) (ret int64) {
-	for a > 0 {
-		ret += a % 10
-		a /= 10
-	}
-	return
-}
 func DigNums(a int) (ret []int) {
 	for a > 0 {
 		ret = append(ret, a%10)
@@ -146,12 +138,6 @@ func DigNums(a int) (ret []int) {
 	last := len(ret) - 1
 	for i := 0; i < last-i; i++ {
 		ret[i], ret[last-i] = ret[last-i], ret[i]
-	}
-	return
-}
-func BigDigSum(a []int64) (ret int64) {
-	for _, v := range a {
-		ret += DigSum(v)
 	}
 	return
 }

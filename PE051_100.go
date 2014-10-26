@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"math"
+	"math/big"
 	"os"
 	"sort"
 	"strconv"
@@ -944,14 +945,86 @@ func PE63() (ret int) {
 // Exactly four continued fractions, for N ≤ 13, have an odd period.
 //
 // How many continued fractions for N ≤ 10000 have an odd period?
-func PE64() (ret int) {
+func PE64(N int) (ret int) {
+	for n := 2; n <= N; n++ {
+		_, period := ContinueFraction(n)
+		if len(period)%2 != 0 {
+			ret++
+		}
+	}
+
+	return
+}
+
+// √13=[3;(1,1,1,1,6)], period=5
+// root=13 => first=3, period=[1,1,1,1,6]
+func ContinueFraction(root int) (first int, period []int) {
+	var b, b0 int = 1, 1
+	first = int(math.Sqrt(float64(root)))
+	if root == first*first { // square number
+		return
+	}
+	var c, c0 int = first, first
+	for {
+		na, nb, nc := formatFraction(root, b, c)
+		period = append(period, na)
+		b = nb
+		c = nc
+		if b0 == b && c0 == c {
+			return
+		}
+	}
+	return
+}
+
+// b / (√r-c) => na + (√r - nc)/nb
+func formatFraction(r int, b, c int) (na, nb, nc int) {
+	nb = (r - c*c) / b
+	for na = 1; (na*nb-c)*(na*nb-c) < r; na++ {
+	}
+	na--
+	nc = na*nb - c
 	return
 }
 
 // Problem 65 - Convergents of e
 //
-func PE65() (ret int) {
-	return
+// The square root of 2 can be written as an infinite continued fraction.
+// The infinite continued fraction can be written, √2 = [1;(2)], (2) indicates that 2 repeats ad infinitum. In a similar way, √23 = [4;(1,3,1,8)].
+// It turns out that the sequence of partial values of continued fractions for square roots provide the best rational approximations. Let us consider the convergents for √2.
+// Hence the sequence of the first ten convergents for √2 are:
+//   1, 3/2, 7/5, 17/12, 41/29, 99/70, 239/169, 577/408, 1393/985, 3363/2378, ...
+//
+// What is most surprising is that the important mathematical constant,
+//   e = [2; 1,2,1, 1,4,1, 1,6,1 , ... , 1,2k,1, ...].
+//
+// The first ten terms in the sequence of convergents for e are:
+//   2, 3, 8/3, 11/4, 19/7, 87/32, 106/39, 193/71, 1264/465, 1457/536, ...
+//
+// The sum of digits in the numerator of the 10th convergent is 1+4+5+7=17.
+//
+// Find the sum of digits in the numerator of the 100th convergent of the continued fraction for e.
+func PE65() int {
+	var list []int64
+	var i int64
+	for i = 1; i <= 33; i++ { // 100 == 1 + 3*33
+		list = append(list, 1, 2*i, 1)
+	}
+	res := ContinueFractionSimplify(2, list)
+	snum := res.Num().String()
+	return SumInts(DigitsInts(snum))
+}
+
+// √2 = [1;(2)]
+// first=1, adder=[2,2,2] => 1+1/(2+1/(2+1/2))
+func ContinueFractionSimplify(first int64, adder []int64) *big.Rat {
+	ret := big.NewRat(0, 1)
+	for i := len(adder) - 1; i >= 0; i-- {
+		ret.Add(ret, big.NewRat(adder[i], 1))
+		ret.Inv(ret)
+	}
+	ret.Add(ret, big.NewRat(first, 1))
+	return ret
 }
 
 // Problem 66 - Diophantine equation
