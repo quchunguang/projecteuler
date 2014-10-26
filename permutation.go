@@ -40,6 +40,10 @@ func IsPermutations(a, b int) bool {
 	return IntsEquals(ma, mb)
 }
 
+// Callbacks
+var PermStrCallback func(string)
+var CombStrCallback func(string)
+
 // Permutation n, m of charset string.
 // n == len(charset) >= m
 // Every result (as string) will processed by PermStrCallback.
@@ -53,7 +57,18 @@ func PermStr(charset string, m int, prefix string) {
 	}
 }
 
-var PermStrCallback func(string)
+// Full permutation of charset string.
+// Every result (as string) will processed by PermStrCallback.
+func FullPermStr(charset string) {
+	PermStr(charset, len(charset), "")
+}
+
+// Full permutation with round.
+// May start with the first byte of charset.
+// Every result (as string) will processed by PermStrCallback.
+func RoundPermStr(charset string) {
+	PermStr(charset[1:], len(charset)-1, string(charset[0]))
+}
 
 // Combination n, m of charset string.
 // n == len(charset) >= m
@@ -70,5 +85,3 @@ func CombStr(charset string, m int, prefix string) {
 		CombStr(charset[1:], m, prefix)
 	}
 }
-
-var CombStrCallback func(string)

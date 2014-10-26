@@ -983,7 +983,67 @@ func PE66() (ret int) {
 //
 // NOTE: This is a much more difficult version of Problem 18. It is not possible to try every route to solve this problem, as there are 299 altogether! If you could check one trillion (1012) routes every second it would take over twenty billion years to check them all. There is an efficient algorithm to solve it. ;o)
 func PE67(filename string) int {
-	return MaxPathSum(filename, 100)
+	data := SST(filename)
+	// Find biggest path
+	return findPathMax2(data)
+}
+
+type datai struct {
+	sm    int  // Biggest sum
+	right bool // Previous item go to here from right path?(or left)
+}
+
+func findPathMax2(data [][]int) (ret int) {
+	// Create temp data structure
+	N := len(data)
+	sd := make([][]datai, N)
+	for i := 0; i < N; i++ {
+		sd[i] = make([]datai, i+1)
+	}
+
+	// Calculate sd[i][j], the biggest sum data[0][0] -> data[i][j]
+	sd[0][0].sm = data[0][0]
+	for i := 1; i < N; i++ {
+		//j==0
+		sd[i][0].sm = sd[i-1][0].sm + data[i][0]
+		sd[i][0].right = true
+		//j==1..i-1
+		for j := 1; j < i; j++ {
+			if sd[i-1][j-1].sm > sd[i-1][j].sm {
+				sd[i][j].sm = sd[i-1][j-1].sm + data[i][j]
+				sd[i][j].right = false
+			} else {
+				sd[i][j].sm = sd[i-1][j].sm + data[i][j]
+				sd[i][j].right = true
+			}
+		}
+		//j==i
+		sd[i][i].sm = sd[i-1][i-1].sm + data[i][i]
+		sd[i][i].right = false
+	}
+
+	// Get result
+	rets := make([]int, N)
+	for j := 0; j < N; j++ {
+		if sd[N-1][j].sm > ret {
+			ret = sd[N-1][j].sm
+			rets[N-1] = j
+		}
+	}
+	for i := N - 2; i >= 0; i-- {
+		if sd[i+1][rets[i+1]].right {
+			rets[i] = rets[i+1]
+		} else {
+			rets[i] = rets[i+1] - 1
+		}
+	}
+
+	// Print result
+	for i := 0; i < N; i++ {
+		fmt.Printf("%d ", data[i][rets[i]])
+	}
+	fmt.Println()
+	return
 }
 
 // Problem 68 - Magic 5-gon ring

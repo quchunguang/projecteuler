@@ -717,7 +717,23 @@ func PE17(N int) (ret int) {
 //
 // NOTE: As there are only 16384 routes, it is possible to solve this problem by trying every route. However, Problem 67, is the same challenge with a triangle containing one-hundred rows; it cannot be solved by brute force, and requires a clever method! ;o)
 func PE18(filename string) int {
-	return MaxPathSum(filename, 15)
+	data := SST(filename)
+	// Find biggest path
+	return findPathMax(data, 0, 0)
+}
+
+func findPathMax(data [][]int, i, j int) (ret int) {
+	if i == len(data)-1 {
+		return data[i][j]
+	}
+	l := findPathMax(data, i+1, j)
+	r := findPathMax(data, i+1, j+1)
+	if l > r {
+		ret = l + data[i][j]
+	} else {
+		ret = r + data[i][j]
+	}
+	return
 }
 
 // Problem 19 - Counting Sundays
