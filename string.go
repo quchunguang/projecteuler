@@ -159,6 +159,13 @@ func DigitsInts(digits string) (ret []int) {
 	return
 }
 
+func IntsDigits(ints []int) (ret string) {
+	for _, v := range ints {
+		ret += strconv.Itoa(v)
+	}
+	return
+}
+
 // Convert digits string (as locations start with 1) to []bool
 // ex. "135", 6 -> {true, false, true, false, true, false}
 func TrueDigits(digits string, length int) []bool {

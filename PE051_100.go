@@ -1259,7 +1259,60 @@ func findPathMax2(data [][]int) (ret int) {
 //     _    _  _  _
 //            _
 func PE68() (ret int) {
+	PermStrCallback = callbackPE68
+	PermStr("0123456789", 10, "")
 	return
+}
+
+func callbackPE68(ret string) {
+	// Convert string to ints (0..9)
+	ints := DigitsInts(ret)
+
+	// first external node (ints[0]) must be the smallest of all external nodes (ints[0:5])
+	min := ints[0]
+	for i := 1; i < 5; i++ {
+		if ints[i] < min {
+			return
+		}
+	}
+
+	// Convert 0..9 -> 1..10
+	for i := 0; i < len(ints); i++ {
+		ints[i]++
+	}
+
+	s167 := ints[0] + ints[5] + ints[6]
+	var s278 int
+	for i := 1; i < 5; i++ {
+		if i == 4 {
+			s278 = ints[4] + ints[9] + ints[5]
+		} else {
+			s278 = ints[i] + ints[i+5] + ints[i+6]
+		}
+		if s167 != s278 {
+			return
+		}
+	}
+
+	// Found!!!
+	// Build string
+	s := ""
+	for i := 0; i < 5; i++ {
+		s += strconv.Itoa(ints[i])
+		s += strconv.Itoa(ints[i+5])
+		if i == 4 {
+			s += strconv.Itoa(ints[5])
+		} else {
+			s += strconv.Itoa(ints[i+6])
+		}
+	}
+	// Remove 17-digit strings
+	if len(s) == 17 {
+		return
+	}
+
+	// Output result, the last one printed is the answer (6531031914842725)
+	fmt.Println(s167, ints, s)
 }
 
 // Problem 69 - Totient maximum
