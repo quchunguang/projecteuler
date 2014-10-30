@@ -134,3 +134,25 @@ func DigSum(a int64) (ret int64) {
 	}
 	return
 }
+
+// Compare two BigNum
+// 1 if a<b; 0 if a==b; -1 if a>b
+func BigLess(a, b []int64) int {
+	lena := len(a)
+	lenb := len(b)
+	if lena < lenb {
+		return 1
+	} else if lena > lenb {
+		return -1
+	}
+	// lena==lenb
+	for i := lena - 1; i >= 0; i-- {
+		if a[i] < b[i] {
+			return 1
+		} else if a[i] > b[i] {
+			return -1
+		}
+	}
+	// equal
+	return 0
+}

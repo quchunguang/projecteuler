@@ -945,8 +945,9 @@ func PE63() (ret int) {
 // Exactly four continued fractions, for N ≤ 13, have an odd period.
 //
 // How many continued fractions for N ≤ 10000 have an odd period?
-func PE64(N int) (ret int) {
-	for n := 2; n <= N; n++ {
+func PE64(N int64) (ret int) {
+	var n int64
+	for n = 2; n <= N; n++ {
 		_, period := ContinueFraction(n)
 		if len(period)%2 != 0 {
 			ret++
@@ -958,13 +959,13 @@ func PE64(N int) (ret int) {
 
 // √13=[3;(1,1,1,1,6)], period=5
 // root=13 => first=3, period=[1,1,1,1,6]
-func ContinueFraction(root int) (first int, period []int) {
-	var b, b0 int = 1, 1
-	first = int(math.Sqrt(float64(root)))
+func ContinueFraction(root int64) (first int64, period []int64) {
+	var b, b0 int64 = 1, 1
+	first = int64(math.Sqrt(float64(root)))
 	if root == first*first { // square number
 		return
 	}
-	var c, c0 int = first, first
+	var c, c0 int64 = first, first
 	for {
 		na, nb, nc := formatFraction(root, b, c)
 		period = append(period, na)
@@ -978,7 +979,7 @@ func ContinueFraction(root int) (first int, period []int) {
 }
 
 // b / (√r-c) => na + (√r - nc)/nb
-func formatFraction(r int, b, c int) (na, nb, nc int) {
+func formatFraction(r int64, b, c int64) (na, nb, nc int64) {
 	nb = (r - c*c) / b
 	for na = 1; (na*nb-c)*(na*nb-c) < r; na++ {
 	}
@@ -1029,7 +1030,127 @@ func ContinueFractionSimplify(first int64, adder []int64) *big.Rat {
 
 // Problem 66 - Diophantine equation
 //
-func PE66() (ret int) {
+// Consider quadratic Diophantine equations of the form:
+//
+//   x^2 - Dy^2 = 1
+//
+// For example, when D=13, the minimal solution in x is 6492 - 13×1802 = 1.
+// It can be assumed that there are no solutions in positive integers when D is square.
+// By finding minimal solutions in x for D = {2, 3, 5, 6, 7}, we obtain the following:
+//
+//   3^2 - 2×2^2 = 1
+//   2^2 - 3×1^2 = 1
+//   9^2 - 5×4^2 = 1
+//   5^2 - 6×2^2 = 1
+//   8^2 - 7×3^2 = 1
+//
+// Hence, by considering minimal solutions in x for D ≤ 7, the largest x is obtained when D=5.
+// Find the value of D ≤ 1000 in minimal solutions of x for which the largest value of x is obtained.
+func PE66(D int64) (ret int64) {
+	var i, d int64
+	xmax := big.NewInt(0)
+
+	for i, d = 2, 2; d <= D; d++ {
+		// Pell equation has no natural number solution where D>0 is a square number.
+		if d == i*i {
+			i++
+			continue
+		}
+
+		x, y := SolveDiophantine(d)
+		// x, y := SolveDiophantine1(d)
+		// x,y := SolveDiophantine2(61))
+		// x, y := SolveDiophantine3(int64(d))
+
+		if x.Cmp(xmax) == 1 {
+			xmax = x
+			ret = d
+		}
+		fmt.Println(d, x, y)
+	}
+
+	return
+}
+
+// Solved by finding the continued fraction [a0; (a1,a2, ... an-1, 2*a0)] of sqrt(D).
+//   p/q = [a0; a1,a2, ... an-1]
+// http://blog.csdn.net/wh2124335/article/details/8871535
+// http://mathworld.wolfram.com/PellEquation.html
+func SolveDiophantine(D int64) (x, y *big.Int) {
+	first, period := ContinueFraction(D)
+	res := ContinueFractionSimplify(int64(first), period[:len(period)-1])
+	p := res.Num()
+	q := res.Denom()
+	if len(period)%2 == 0 {
+		x = p
+		y = q
+	} else {
+		x = new(big.Int)
+		y = new(big.Int)
+		x.Mul(p, p).Mul(x, big.NewInt(2)).Add(x, big.NewInt(1))
+		y.Mul(p, q).Mul(y, big.NewInt(2))
+	}
+	return
+}
+
+// overflow
+func SolveDiophantine1(D int) (x, y int) {
+	x, y = 1, 1
+	for {
+		less := x*x - D*y*y - 1
+		if less < 0 {
+			x++
+		} else if less > 0 {
+			y++
+		} else {
+			return
+		}
+	}
+	return
+}
+
+// too slow
+func SolveDiophantine2(D int) (x, y []int64) {
+	x = BigNum("1")
+	y = BigNum("1")
+	one := BigNum("1")
+	for {
+		l := BigMul(x, x)
+		r := BigSum(BigMulInt(BigMul(y, y), int64(D)), one)
+		less := BigLess(l, r)
+		if less == 1 {
+			x = BigSum(x, one)
+		} else if less == -1 {
+			y = BigSum(y, one)
+		} else {
+			return
+		}
+	}
+	return
+}
+
+// too slow
+func SolveDiophantine3(D int64) (x, y *big.Int) {
+	x = big.NewInt(1)
+	y = big.NewInt(1)
+	d := big.NewInt(D)
+	xx := new(big.Int)
+	dyy := new(big.Int)
+	one := big.NewInt(1)
+	for {
+		xx.Mul(x, x)
+		dyy.Mul(y, y)
+		dyy.Mul(dyy, d)
+		xx.Sub(xx, dyy)
+		cmp := xx.Cmp(one)
+		if cmp == -1 {
+			x.Add(x, one)
+		} else if cmp == 1 {
+			y.Add(y, one)
+		} else {
+			return
+		}
+	}
 	return
 }
 
@@ -1037,9 +1158,9 @@ func PE66() (ret int) {
 //
 // By starting at the top of the triangle below and moving to adjacent numbers on the row below, the maximum total from top to bottom is 23.
 //
-// 3
-// 7 4
-// 2 4 6
+//    3
+//   7 4
+//  2 4 6
 // 8 5 9 3
 //
 // That is, 3 + 7 + 4 + 9 = 23.
@@ -1113,6 +1234,30 @@ func findPathMax2(data [][]int) (ret int) {
 
 // Problem 68 - Magic 5-gon ring
 //
+// Consider the following "magic" 3-gon ring, filled with the numbers 1 to 6, and each line adding to nine.
+// Working clockwise, and starting from the group of three with the numerically lowest external node (4,3,2 in this example), each solution can be described uniquely. For example, the above solution can be described by the set: 4,3,2; 6,2,1; 5,1,3.
+//        4
+//           3
+//         1   2   6
+//      5
+// It is possible to complete the ring with four different totals: 9, 10, 11, and 12. There are eight solutions in total.
+// Total	Solution Set
+// 9		4,2,3; 5,3,1; 6,1,2
+// 9		4,3,2; 6,2,1; 5,1,3
+// 10		2,3,5; 4,5,1; 6,1,3
+// 10		2,5,3; 6,3,1; 4,1,5
+// 11		1,4,6; 3,6,2; 5,2,4
+// 11		1,6,4; 5,4,2; 3,2,6
+// 12		1,5,6; 2,6,4; 3,4,5
+// 12		1,6,5; 3,5,4; 2,4,6
+//
+// By concatenating each group it is possible to form 9-digit strings; the maximum string for a 3-gon ring is 432621513.
+// Using the numbers 1 to 10, and depending on arrangements, it is possible to form 16- and 17-digit strings. What is the maximum 16-digit string for a "magic" 5-gon ring?
+//       _
+//           _     _
+//        _      _
+//     _    _  _  _
+//            _
 func PE68() (ret int) {
 	return
 }
