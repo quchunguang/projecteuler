@@ -160,8 +160,18 @@ func EulerPhi(N int64) (ret int64) {
 	ret = N
 	pfsmap := PrimeFactors(int(N))
 	for p, _ := range pfsmap {
-		ret *= int64(p) - 1
 		ret /= int64(p)
+		ret *= int64(p) - 1
 	}
 	return
+}
+
+func IsPrime(n int) bool {
+	sqrtn := int(math.Sqrt(float64(n)))
+	for i := 3; i <= sqrtn; i += 2 {
+		if n%i == 0 {
+			return false
+		}
+	}
+	return true
 }

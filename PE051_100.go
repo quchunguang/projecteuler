@@ -613,16 +613,6 @@ func PE60() (ret int) {
 	return
 }
 
-func isPrime(n int) bool {
-	sqrtn := int(math.Sqrt(float64(n)))
-	for i := 3; i <= sqrtn; i += 2 {
-		if n%i == 0 {
-			return false
-		}
-	}
-	return true
-}
-
 func sumIntStrings(ss []string) (ret int) {
 	for _, v := range ss {
 		a, _ := strconv.Atoi(v)
@@ -636,7 +626,7 @@ func canJoinSet(set []string, value int) bool {
 	for _, v := range set {
 		a, _ := strconv.Atoi(v + sv)
 		b, _ := strconv.Atoi(sv + v)
-		if !isPrime(a) || !isPrime(b) {
+		if !IsPrime(a) || !IsPrime(b) {
 			return false
 		}
 	}
@@ -1344,10 +1334,23 @@ func PE69(N int64) (ret int64) {
 // The number 1 is considered to be relatively prime to every positive number, so φ(1)=1.
 // Interestingly, φ(87109)=79180, and it can be seen that 87109 is a permutation of 79180.
 // Find the value of n, 1 < n < 107, for which φ(n) is a permutation of n and the ratio n/φ(n) produces a minimum.
-func PE70(N int64) (ret int) {
+// This program will cost 79m33.594s, and result will get at 83%.
+func PE70(N int64) (ret int64) {
+	var ratephi, min float64 = 0, 1e10
 	var n int64
 	for n = 2; n < N; n++ {
-		EulerPhi(n)
+		if n%100000 == 0 {
+			fmt.Println(n/100000, "%")
+		}
+		phi := EulerPhi(n)
+		if IsPermutations(int(n), int(phi)) {
+			ratephi = float64(n) / float64(phi)
+			if ratephi < min {
+				min = ratephi
+				ret = n
+				fmt.Println(n, phi, ratephi)
+			}
+		}
 	}
 	return
 }
