@@ -155,23 +155,13 @@ func SumPrimes(n int) {
 	}
 }
 
-//////
-func RelativelyPrimes(N int) (ret int) {
-	pfsmap := PrimeFactors(N)
-	for i := 1; i < N; i++ {
-		for k, _ := range pfsmap {
-			if i%k == 0 {
-				goto NEXT
-			}
-		}
-		ret++
-	NEXT:
+// Φ(n) = n * (1 - 1/p1) * (1 - 1/p2) * ... * (1 - 1/pk)
+func EulerPhi(N int64) (ret int64) {
+	ret = N
+	pfsmap := PrimeFactors(int(N))
+	for p, _ := range pfsmap {
+		ret *= int64(p) - 1
+		ret /= int64(p)
 	}
 	return
-}
-
-// return n/phi(n)
-// phi(n) is Euler's Totient function
-func RatePhi(N int) float64 {
-	return float64(N) / float64(RelativelyPrimes(N))
 }

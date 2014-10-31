@@ -1253,11 +1253,11 @@ func findPathMax2(data [][]int) (ret int) {
 //
 // By concatenating each group it is possible to form 9-digit strings; the maximum string for a 3-gon ring is 432621513.
 // Using the numbers 1 to 10, and depending on arrangements, it is possible to form 16- and 17-digit strings. What is the maximum 16-digit string for a "magic" 5-gon ring?
-//       _
-//           _     _
-//        _      _
-//     _    _  _  _
-//            _
+//       0
+//           5     1
+//        9      6
+//     4    8  7  2
+//            3
 func PE68() (ret int) {
 	PermStrCallback = callbackPE68
 	PermStr("0123456789", 10, "")
@@ -1284,11 +1284,7 @@ func callbackPE68(ret string) {
 	s167 := ints[0] + ints[5] + ints[6]
 	var s278 int
 	for i := 1; i < 5; i++ {
-		if i == 4 {
-			s278 = ints[4] + ints[9] + ints[5]
-		} else {
-			s278 = ints[i] + ints[i+5] + ints[i+6]
-		}
+		s278 = ints[i] + ints[i+5] + ints[(i+1)%5+5]
 		if s167 != s278 {
 			return
 		}
@@ -1300,11 +1296,7 @@ func callbackPE68(ret string) {
 	for i := 0; i < 5; i++ {
 		s += strconv.Itoa(ints[i])
 		s += strconv.Itoa(ints[i+5])
-		if i == 4 {
-			s += strconv.Itoa(ints[5])
-		} else {
-			s += strconv.Itoa(ints[i+6])
-		}
+		s += strconv.Itoa(ints[(i+1)%5+5])
 	}
 	// Remove 17-digit strings
 	if len(s) == 17 {
@@ -1318,40 +1310,45 @@ func callbackPE68(ret string) {
 // Problem 69 - Totient maximum
 //
 // Euler's Totient function, φ(n) [sometimes called the phi function], is used to determine the number of numbers less than n which are relatively prime to n. For example, as 1, 2, 4, 5, 7, and 8, are all less than nine and relatively prime to nine, φ(9)=6.
+//
 // n 	Relatively Prime 	φ(n) 	n/φ(n)
-// 2 	1 	1 	2
-// 3 	1,2 	2 	1.5
-// 4 	1,3 	2 	2
-// 5 	1,2,3,4 	4 	1.25
-// 6 	1,5 	2 	3
-// 7 	1,2,3,4,5,6 	6 	1.1666...
-// 8 	1,3,5,7 	4 	2
-// 9 	1,2,4,5,7,8 	6 	1.5
-// 10 	1,3,7,9 	4 	2.5
+// 2 	1 					1 		2
+// 3 	1,2 				2 		1.5
+// 4 	1,3 				2 		2
+// 5 	1,2,3,4 			4 		1.25
+// 6 	1,5 				2 		3
+// 7 	1,2,3,4,5,6 		6 		1.1666...
+// 8 	1,3,5,7 			4 		2
+// 9 	1,2,4,5,7,8 		6 		1.5
+// 10 	1,3,7,9 			4 		2.5
 //
 // It can be seen that n=6 produces a maximum n/φ(n) for n ≤ 10.
-//
 // Find the value of n ≤ 1,000,000 for which n/φ(n) is a maximum.
-func PE69() (ret int) {
-	return
-}
-
-func PE69_slow(N int) (ret int) {
-	var max float64 = 0
-	for n := 2; n < N; n++ {
-		ratephi := RatePhi(n)
+// It will run about 70s.
+func PE69(N int64) (ret int64) {
+	var ratephi, max float64
+	var n int64
+	for n = 2; n < N; n++ {
+		ratephi = float64(n) / float64(EulerPhi(n))
 		if ratephi > max {
 			max = ratephi
 			ret = n
 		}
 	}
-	fmt.Println(ret, max)
 	return
 }
 
 // Problem 70 - Totient permutation
 //
-func PE70() (ret int) {
+// Euler's Totient function, φ(n) [sometimes called the phi function], is used to determine the number of positive numbers less than or equal to n which are relatively prime to n. For example, as 1, 2, 4, 5, 7, and 8, are all less than nine and relatively prime to nine, φ(9)=6.
+// The number 1 is considered to be relatively prime to every positive number, so φ(1)=1.
+// Interestingly, φ(87109)=79180, and it can be seen that 87109 is a permutation of 79180.
+// Find the value of n, 1 < n < 107, for which φ(n) is a permutation of n and the ratio n/φ(n) produces a minimum.
+func PE70(N int64) (ret int) {
+	var n int64
+	for n = 2; n < N; n++ {
+		EulerPhi(n)
+	}
 	return
 }
 
