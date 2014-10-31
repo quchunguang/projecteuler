@@ -8,6 +8,8 @@ import (
 // 16 color for ANSI/VT100 Terminal Control Escape Sequences
 // http://www.termsys.demon.co.uk/vtansi.htm
 const (
+	EL = "\r\033[2K" // Erase whole line and set cursor to beginning of the line
+
 	CRK = "\033[30m" // blacK - Regular
 	CRR = "\033[31m" // Red
 	CRG = "\033[32m" // Green

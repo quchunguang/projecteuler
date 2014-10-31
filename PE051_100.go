@@ -1339,8 +1339,9 @@ func PE70(N int64) (ret int64) {
 	var ratephi, min float64 = 0, 1e10
 	var n int64
 	for n = 2; n < N; n++ {
+		// Process bar
 		if n%100000 == 0 {
-			fmt.Println(n/100000, "%")
+			fmt.Print(EL, n/100000, "%")
 		}
 		phi := EulerPhi(n)
 		if IsPermutations(int(n), int(phi)) {
@@ -1348,10 +1349,11 @@ func PE70(N int64) (ret int64) {
 			if ratephi < min {
 				min = ratephi
 				ret = n
-				fmt.Println(n, phi, ratephi)
+				fmt.Println(EL, n, phi, ratephi)
 			}
 		}
 	}
+	fmt.Print(EL)
 	return
 }
 
@@ -1387,7 +1389,24 @@ func PE71(D int64) (ret int64) {
 
 // Problem 72 - Counting fractions
 //
-func PE72() (ret int) {
+// Consider the fraction, n/d, where n and d are positive integers. If n<d and HCF(n,d)=1, it is called a reduced proper fraction.
+// If we list the set of reduced proper fractions for d ≤ 8 in ascending order of size, we get:
+//
+// 1/8, 1/7, 1/6, 1/5, 1/4, 2/7, 1/3, 3/8, 2/5, 3/7, 1/2, 4/7, 3/5, 5/8, 2/3, 5/7, 3/4, 4/5, 5/6, 6/7, 7/8
+//
+// It can be seen that there are 21 elements in this set.
+// How many elements would be contained in the set of reduced proper fractions for d ≤ 1,000,000?
+func PE72(D int64) (ret int64) {
+	var d int64
+	for d = 2; d <= D; d++ {
+		// Process bar
+		if d%10000 == 0 {
+			fmt.Print(EL, d/10000, "%")
+		}
+
+		ret += EulerPhi(d)
+	}
+	fmt.Print(EL)
 	return
 }
 
