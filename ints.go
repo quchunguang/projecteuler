@@ -48,6 +48,17 @@ func InInts(slice []int, v int) bool {
 	}
 	return true
 }
+
+// Check if v in an unsorted int slice
+func InIntsUnsort(slice []int, v int) bool {
+	for _, value := range slice {
+		if value == v {
+			return true
+		}
+	}
+	return false
+}
+
 func SumInts(list []int) (sum int) {
 	for _, v := range list {
 		sum += v

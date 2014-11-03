@@ -1441,7 +1441,45 @@ func PE73(D int64) (ret int64) {
 
 // Problem 74 - Digit factorial chains
 //
-func PE74() (ret int) {
+func PE74(N int) (ret int) {
+	Genfacts()
+	var ichain []int
+	for n := 0; n < N; n++ {
+		item := n
+		ichain = append(ichain, item)
+		for {
+			item = SumDigFact(item)
+			if InIntsUnsort(ichain, item) {
+				if len(ichain) == 60 {
+					ret++
+				}
+				break
+			} else {
+				ichain = append(ichain, item)
+			}
+		}
+		ichain = nil
+	}
+	return
+}
+
+var facts [10]int
+
+func Genfacts() {
+	fact := 1
+	facts[0] = 1
+	for i := 1; i < 10; i++ {
+		fact *= i
+		facts[i] = fact
+	}
+}
+
+// Sum of factor of each of digits of given int
+func SumDigFact(N int) (ret int) {
+	digits := DigNums(N)
+	for _, v := range digits {
+		ret += facts[v]
+	}
 	return
 }
 
