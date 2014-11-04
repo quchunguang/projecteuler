@@ -1441,6 +1441,24 @@ func PE73(D int64) (ret int64) {
 
 // Problem 74 - Digit factorial chains
 //
+// The number 145 is well known for the property that the sum of the factorial of its digits is equal to 145:
+//
+// 1! + 4! + 5! = 1 + 24 + 120 = 145
+//
+// Perhaps less well known is 169, in that it produces the longest chain of numbers that link back to 169; it turns out that there are only three such loops that exist:
+//
+// 169 → 363601 → 1454 → 169
+// 871 → 45361 → 871
+// 872 → 45362 → 872
+//
+// It is not difficult to prove that EVERY starting number will eventually get stuck in a loop. For example,
+//
+// 69 → 363600 → 1454 → 169 → 363601 (→ 1454)
+// 78 → 45360 → 871 → 45361 (→ 871)
+// 540 → 145 (→ 145)
+//
+// Starting with 69 produces a chain of five non-repeating terms, but the longest non-repeating chain with a starting number below one million is sixty terms.
+// How many chains, with a starting number below one million, contain exactly sixty non-repeating terms?
 func PE74(N int) (ret int) {
 	Genfacts()
 	var ichain []int
@@ -1485,7 +1503,43 @@ func SumDigFact(N int) (ret int) {
 
 // Problem 75 - Singular integer right triangles
 //
-func PE75() (ret int) {
+// It turns out that 12 cm is the smallest length of wire that can be bent to form an integer sided right angle triangle in exactly one way, but there are many more examples.
+//
+// 12 cm: (3,4,5)
+// 24 cm: (6,8,10)
+// 30 cm: (5,12,13)
+// 36 cm: (9,12,15)
+// 40 cm: (8,15,17)
+// 48 cm: (12,16,20)
+//
+// In contrast, some lengths of wire, like 20 cm, cannot be bent to form an integer sided right angle triangle, and other lengths allow more than one solution to be found; for example, using 120 cm it is possible to form exactly three different integer sided right angle triangles.
+//
+// 120 cm: (30,40,50), (20,48,52), (24,45,51)
+//
+// Given that L is the length of the wire, for how many values of L ≤ 1,500,000 can exactly one integer sided right angle triangle be formed?
+func PE75(L int) (ret int) {
+	var triangles = make([]int, L+1)
+	var mL = int(math.Sqrt(float64(L) / 2))
+
+	for m := 2; m < mL; m++ {
+		for n := 1; n < m; n++ {
+			if (n+m)%2 == 1 && Gcd(n, m) == 1 {
+				a := m*m - n*n
+				b := 2 * m * n
+				c := m*m + n*n
+				p := a + b + c
+				for p <= L {
+					triangles[p]++
+					if triangles[p] == 1 {
+						ret++
+					} else if triangles[p] == 2 {
+						ret--
+					}
+					p += a + b + c
+				}
+			}
+		}
+	}
 	return
 }
 

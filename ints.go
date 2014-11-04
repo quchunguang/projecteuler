@@ -152,3 +152,14 @@ func DigNums(a int) (ret []int) {
 	}
 	return
 }
+
+//////
+func Gcd(m, n int) int {
+	if m < n {
+		m, n = n, m
+	}
+	for m%n != 0 {
+		m, n = n, m%n
+	}
+	return n
+}
