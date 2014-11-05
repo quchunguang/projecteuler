@@ -117,24 +117,6 @@ func Hexagonal(n int) int {
 	return n * (2*n - 1)
 }
 
-//////
-var base int = 1e10
-
-func MulTail(a int, b int) (ret int) {
-	a = a % base
-	b = b % base
-	ret = a * b
-	ret = ret % base
-	return
-}
-func PowerTail(a int, b int) (ret int) {
-	ret = 1
-	for i := 0; i < b; i++ {
-		ret = MulTail(ret, a)
-	}
-	return
-}
-
 func DeleteIndex(f []int, i int) []int {
 	return append(f[:i], f[i+1:]...)
 }
