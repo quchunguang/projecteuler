@@ -1676,7 +1676,7 @@ func PE96() (ret int) {
 // However, in 2004 there was found a massive non-Mersenne prime which contains 2,357,207 digits: 28433×27830457+1.
 //
 // Find the last ten digits of this prime number.
-func PE97() (ret int) {
+func PE97() (ret int64) {
 	// ret = 2^7830457
 	ret = 1
 	for i := 0; i < 7830457; i++ {

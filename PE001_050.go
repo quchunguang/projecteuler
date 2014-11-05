@@ -1722,12 +1722,31 @@ func PE47(n int) int {
 // The series, 1^1 + 2^2 + 3^3 + ... + 10^10 = 10405071317.
 //
 // Find the last ten digits of the series, 1^1 + 2^2 + 3^3 + ... + 1000^1000.
-func PE48(n int) int {
-	var sum int
-	for i := 1; i <= n; i++ {
-		sum += PowerTail(i, i)
+func PE48(N int64) (ret int64) {
+	var n int64
+	for n = 1; n <= N; n++ {
+		ret += PowerTail(n, n)
 	}
-	return sum % base
+	return ret % base
+}
+
+const base = 1e10
+
+func MulTail(a int64, b int64) (ret int64) {
+	a = a % base
+	b = b % base
+	ret = a * b
+	ret = ret % base
+	return
+}
+
+func PowerTail(a int64, b int64) (ret int64) {
+	ret = 1
+	var i int64
+	for i = 0; i < b; i++ {
+		ret = MulTail(ret, a)
+	}
+	return
 }
 
 // Problem 49 - Prime permutations
