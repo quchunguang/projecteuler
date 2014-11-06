@@ -2,6 +2,7 @@ package projecteuler
 
 import (
 	"sort"
+	"strconv"
 )
 
 //////
@@ -47,6 +48,16 @@ func InInts(slice []int, v int) bool {
 		return false
 	}
 	return true
+}
+
+// Join concatenates the elements of ints to create a single string.
+func JoinInts(slice []int, sep string) (ret string) {
+	for _, i := range slice {
+		ret += strconv.Itoa(i)
+		ret += sep
+	}
+	ret = ret[:len(ret)-len(sep)]
+	return
 }
 
 // Check if v in an unsorted int slice

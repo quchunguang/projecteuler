@@ -1617,8 +1617,34 @@ func planNum(max int, remain int, preset []int) {
 //   3 + 3 + 2 + 2
 //   2 + 2 + 2 + 2 + 2
 // What is the first value which can be written as the sum of primes in over five thousand different ways?
-func PE77() (ret int) {
-	return
+func PE77(W int) (ret int) {
+	for n := 4; ; n++ {
+		ways = 0
+		GenPrimes(n)
+		index := sort.SearchInts(primes, n)
+		planPrime(index-1, n, nil)
+		if ways >= W {
+			ret = n
+			return
+		}
+	}
+}
+
+var ways int
+
+func planPrime(maxindex int, remain int, preset []int) {
+	if remain == 0 && maxindex == -1 {
+		// fmt.Println(SumInts(preset), "=", JoinInts(preset, " + "))
+		ways++
+	}
+	if maxindex == -1 { // remain != 0
+		return
+	}
+	for remain >= 0 {
+		planPrime(maxindex-1, remain, preset)
+		preset = append(preset, primes[maxindex])
+		remain -= primes[maxindex]
+	}
 }
 
 // Problem 78 - Coin partitions
