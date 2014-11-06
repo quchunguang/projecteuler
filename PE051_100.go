@@ -1554,59 +1554,185 @@ func PE75(L int) (ret int) {
 //   1 + 1 + 1 + 1 + 1
 // How many different ways can one hundred be written as a sum of at least two positive integers?
 func PE76(N int) (ret int) {
+	// Create 2D slice, P[m][n] are methods of sum of numbers with 1..m-1.
+	P := make([][]int, N+1, N+1)
+	for n := 1; n <= N; n++ {
+		P[n] = make([]int, N+1, N+1)
+	}
+
+	// P[n][0] = 1
+	for n := 2; n <= N; n++ {
+		P[n][0] = 1
+	}
+	// P[1][i] = 1
+	for i := 1; i <= N; i++ {
+		P[2][i] = 1
+	}
+
+	// P[n][i]
+	for n := 3; n <= N; n++ {
+		for i := 1; i <= N; i++ {
+			for k := i; k >= 0; k -= n - 1 {
+				P[n][i] += P[n-1][k]
+			}
+		}
+	}
+	// for i := 1; i <= N; i++ {
+	// 	fmt.Println(P[i][i])
+	// }
+	ret = P[N][N]
 	return
+}
+
+// Too slow to finish
+func PE76_slow(N int) (ret int) {
+	planNum(N-1, N, nil)
+	return
+}
+
+func planNum(max int, remain int, preset []int) {
+	// fmt.Printf("planNum(%d,%d,%v)\n", max, remain, preset)
+	if remain == 0 && max == 0 {
+		fmt.Println(preset)
+	}
+	if max == 0 { // remain!=0
+		return
+	}
+	// not use max
+	planNum(max-1, remain, preset)
+	// use max
+	for remain >= max {
+		preset = append(preset, max)
+		remain -= max
+		planNum(max-1, remain, preset)
+	}
 }
 
 // Problem 77 - Prime summations
 //
+// It is possible to write ten as the sum of primes in exactly five different ways:
+//   7 + 3
+//   5 + 5
+//   5 + 3 + 2
+//   3 + 3 + 2 + 2
+//   2 + 2 + 2 + 2 + 2
+// What is the first value which can be written as the sum of primes in over five thousand different ways?
 func PE77() (ret int) {
 	return
 }
 
 // Problem 78 - Coin partitions
 //
+// Let p(n) represent the number of different ways in which n coins can be separated into piles. For example, five coins can separated into piles in exactly seven different ways, so p(5)=7.
+//   OOOOO
+//   OOOO   O
+//   OOO   OO
+//   OOO   O   O
+//   OO   OO   O
+//   OO   O   O   O
+//   O   O   O   O   O
+// Find the least value of n for which p(n) is divisible by one million.
 func PE78() (ret int) {
 	return
 }
 
 // Problem 79 - Passcode derivation
 //
+// A common security method used for online banking is to ask the user for three random characters from a passcode. For example, if the passcode was 531278, they may ask for the 2nd, 3rd, and 5th characters; the expected reply would be: 317.
+// The text file, keylog.txt, contains fifty successful login attempts.
+// Given that the three characters are always asked for in order, analyse the file so as to determine the shortest possible secret passcode of unknown length.
 func PE79() (ret int) {
 	return
 }
 
 // Problem 80 - Square root digital expansion
 //
+// It is well known that if the square root of a natural number is not an integer, then it is irrational. The decimal expansion of such square roots is infinite without any repeating pattern at all.
+// The square root of two is 1.41421356237309504880..., and the digital sum of the first one hundred decimal digits is 475.
+// For the first one hundred natural numbers, find the total of the digital sums of the first one hundred decimal digits for all the irrational square roots.
 func PE80() (ret int) {
 	return
 }
 
 // Problem 81 - Path sum: two ways
 //
+// In the 5 by 5 matrix below, the minimal path sum from the top left to the bottom right, by only moving to the right and down, is indicated in bold red and is equal to 2427.
+//   \begin{pmatrix} \color{red}{131} & 673 & 234 & 103 & 18\\ \color{red}{201} & \color{red}{96} & \color{red}{342} & 965 & 150\\ 630 & 803 & \color{red}{746} & \color{red}{422} & 111\\ 537 & 699 & 497 & \color{red}{121} & 956\\ 805 & 732 & 524 & \color{red}{37} & \color{red}{331} \end{pmatrix}
+// Find the minimal path sum, in matrix.txt (right click and "Save Link/Target As..."), a 31K text file containing a 80 by 80 matrix, from the top left to the bottom right by only moving right and down.
 func PE81() (ret int) {
 	return
 }
 
 // Problem 82 - Path sum: three ways
 //
+//The minimal path sum in the 5 by 5 matrix below, by starting in any cell in the left column and finishing in any cell in the right column, and only moving up, down, and right, is indicated in red and bold; the sum is equal to 994.
+//   \begin{pmatrix} \color{red}{131} & 673 & 234 & 103 & 18\\ \color{red}{201} & \color{red}{96} & \color{red}{342} & 965 & 150\\ 630 & 803 & \color{red}{746} & \color{red}{422} & 111\\ 537 & 699 & 497 & \color{red}{121} & 956\\ 805 & 732 & 524 & \color{red}{37} & \color{red}{331} \end{pmatrix}
+//Find the minimal path sum, in matrix.txt (right click and "Save Link/Target As..."), a 31K text file containing a 80 by 80 matrix, from the left column to the right column.
 func PE82() (ret int) {
 	return
 }
 
 // Problem 83 - Path sum: four ways
 //
+// In the 5 by 5 matrix below, the minimal path sum from the top left to the bottom right, by moving left, right, up, and down, is indicated in bold red and is equal to 2297.
+//   \begin{pmatrix} \color{red}{131} & 673 & 234 & 103 & 18\\ \color{red}{201} & \color{red}{96} & \color{red}{342} & 965 & 150\\ 630 & 803 & \color{red}{746} & \color{red}{422} & 111\\ 537 & 699 & 497 & \color{red}{121} & 956\\ 805 & 732 & 524 & \color{red}{37} & \color{red}{331} \end{pmatrix}
+// Find the minimal path sum, in matrix.txt (right click and "Save Link/Target As..."), a 31K text file containing a 80 by 80 matrix, from the top left to the bottom right by moving left, right, up, and down.
 func PE83() (ret int) {
 	return
 }
 
 // Problem 84 - Monopoly odds
 //
+// In the game, Monopoly, the standard board is set up in the following way:
+//
+//   GO A1 	CC1 A2 	T1 	R1 	B1 	CH1 B2 	B3  JAIL
+//   H2 	  								C1
+//   T2 	  								U1
+//   H1 	  								C2
+//   CH3 	  								C3
+//   R4 	  								R2
+//   G3 	  								D1
+//   CC3 	  								CC2
+//   G2 	  								D2
+//   G1 	  								D3
+//   G2J F3 U2 	F2 	F1 	R3 	E3 	E2 	CH2 E1 	FP
+//
+// A player starts on the GO square and adds the scores on two 6-sided dice to determine the number of squares they advance in a clockwise direction. Without any further rules we would expect to visit each square with equal probability: 2.5%. However, landing on G2J (Go To Jail), CC (community chest), and CH (chance) changes this distribution.
+//
+// In addition to G2J, and one card from each of CC and CH, that orders the player to go directly to jail, if a player rolls three consecutive doubles, they do not advance the result of their 3rd roll. Instead they proceed directly to jail.
+//
+// At the beginning of the game, the CC and CH cards are shuffled. When a player lands on CC or CH they take a card from the top of the respective pile and, after following the instructions, it is returned to the bottom of the pile. There are sixteen cards in each pile, but for the purpose of this problem we are only concerned with cards that order a movement; any instruction not concerned with movement will be ignored and the player will remain on the CC/CH square.
+//
+//     Community Chest (2/16 cards):
+//         Advance to GO
+//         Go to JAIL
+//     Chance (10/16 cards):
+//         Advance to GO
+//         Go to JAIL
+//         Go to C1
+//         Go to E3
+//         Go to H2
+//         Go to R1
+//         Go to next R (railway company)
+//         Go to next R
+//         Go to next U (utility company)
+//         Go back 3 squares.
+//
+// The heart of this problem concerns the likelihood of visiting a particular square. That is, the probability of finishing at that square after a roll. For this reason it should be clear that, with the exception of G2J for which the probability of finishing on it is zero, the CH squares will have the lowest probabilities, as 5/8 request a movement to another square, and it is the final square that the player finishes at on each roll that we are interested in. We shall make no distinction between "Just Visiting" and being sent to JAIL, and we shall also ignore the rule about requiring a double to "get out of jail", assuming that they pay to get out on their next turn.
+//
+// By starting at GO and numbering the squares sequentially from 00 to 39 we can concatenate these two-digit numbers to produce strings that correspond with sets of squares.
+//
+// Statistically it can be shown that the three most popular squares, in order, are JAIL (6.24%) = Square 10, E3 (3.18%) = Square 24, and GO (3.09%) = Square 00. So these three most popular squares can be listed with the six-digit modal string: 102400.
+//
+// If, instead of using two 6-sided dice, two 4-sided dice are used, find the six-digit modal string.
 func PE84() (ret int) {
 	return
 }
 
 // Problem 85 - Counting rectangles
 //
+// By counting carefully it can be seen that a rectangular grid measuring 3 by 2 contains eighteen rectangles:
+// Although there exists no rectangular grid that contains exactly two million rectangles, find the area of the grid with the nearest solution.
 func PE85() (ret int) {
 	return
 }
