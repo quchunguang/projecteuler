@@ -1564,7 +1564,7 @@ func PE76(N int) (ret int) {
 	for n := 2; n <= N; n++ {
 		P[n][0] = 1
 	}
-	// P[1][i] = 1
+	// P[2][i] = 1
 	for i := 1; i <= N; i++ {
 		P[2][i] = 1
 	}
@@ -1658,7 +1658,41 @@ func planPrime(maxindex int, remain int, preset []int) {
 //   OO   O   O   O
 //   O   O   O   O   O
 // Find the least value of n for which p(n) is divisible by one million.
-func PE78() (ret int) {
+// Cost about 7 minutes
+func PE78(L int) (ret int) {
+	const N int = 100000 // Add if find no answer
+
+	P0 := make([]int, N+1, N+1)
+	P2 := make([]int, N+1, N+1)
+	Pn := make([]int, N+1, N+1)
+
+	// P2[i] = 1
+	for i := 0; i <= N; i++ {
+		P2[i] = 1
+	}
+
+	// Pn[i]
+	for n := 3; n <= N; n++ {
+		if n%100 == 0 {
+			fmt.Println(GreenStr("n = " + strconv.Itoa(n)))
+		}
+		Pn[0] = 1
+		for i := 1; i <= N; i++ {
+			for k := i; k >= 0; k -= n - 1 {
+				Pn[i] += P2[k]
+				if Pn[i] > 1e8 {
+					Pn[i] %= 1e8
+				}
+			}
+		}
+		if (Pn[n]+1)%L == 0 {
+			ret = n
+			return
+		}
+		copy(P2, Pn)
+		copy(Pn, P0)
+	}
+	fmt.Println(RedStr("Find no answer, 10 times N and retry"))
 	return
 }
 
