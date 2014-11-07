@@ -85,7 +85,7 @@ func main() {
 	// fmt.Println(projecteuler.PE76(100))
 	// fmt.Println(projecteuler.PE77(5000))
 	fmt.Println(projecteuler.PE78(1e6))
-	// fmt.Println(projecteuler.PE79())
+	// fmt.Println(projecteuler.PE79("p079_keylog.txt"))
 	// fmt.Println(projecteuler.PE80())
 	// fmt.Println(projecteuler.PE81())
 	// fmt.Println(projecteuler.PE82())

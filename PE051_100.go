@@ -1658,7 +1658,7 @@ func planPrime(maxindex int, remain int, preset []int) {
 //   OO   O   O   O
 //   O   O   O   O   O
 // Find the least value of n for which p(n) is divisible by one million.
-// Cost about 7 minutes
+// Cost about 45 seconds when N = 100000
 func PE78(L int) (ret int) {
 	const N int = 100000 // Add if find no answer
 
@@ -1673,26 +1673,31 @@ func PE78(L int) (ret int) {
 
 	// Pn[i]
 	for n := 3; n <= N; n++ {
-		if n%100 == 0 {
-			fmt.Println(GreenStr("n = " + strconv.Itoa(n)))
+		if n%1000 == 0 {
+			fmt.Print(EL + GreenStr("n = "+strconv.Itoa(n)))
 		}
-		Pn[0] = 1
-		for i := 1; i <= N; i++ {
-			for k := i; k >= 0; k -= n - 1 {
-				Pn[i] += P2[k]
-				if Pn[i] > 1e8 {
-					Pn[i] %= 1e8
-				}
+		// Pn[0..n-2]
+		for i := 0; i < n-1; i++ {
+			Pn[i] = P2[i]
+		}
+		// Pn[n-1..N]
+		for i := n - 1; i <= N; i++ {
+			Pn[i] = P2[i] + Pn[i-n+1]
+			if Pn[i] > 1e8 {
+				Pn[i] %= 1e8
 			}
 		}
+		// Found!!!
 		if (Pn[n]+1)%L == 0 {
 			ret = n
+			fmt.Print(EL)
 			return
 		}
 		copy(P2, Pn)
 		copy(Pn, P0)
 	}
-	fmt.Println(RedStr("Find no answer, 10 times N and retry"))
+	// Not Found!!!
+	fmt.Println(EL + RedStr("Find no answer, 10 times N and retry"))
 	return
 }
 
@@ -1701,7 +1706,7 @@ func PE78(L int) (ret int) {
 // A common security method used for online banking is to ask the user for three random characters from a passcode. For example, if the passcode was 531278, they may ask for the 2nd, 3rd, and 5th characters; the expected reply would be: 317.
 // The text file, keylog.txt, contains fifty successful login attempts.
 // Given that the three characters are always asked for in order, analyse the file so as to determine the shortest possible secret passcode of unknown length.
-func PE79() (ret int) {
+func PE79(filename string) (ret int) {
 	return
 }
 
