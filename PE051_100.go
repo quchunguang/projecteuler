@@ -1658,43 +1658,38 @@ func planPrime(maxindex int, remain int, preset []int) {
 //   OO   O   O   O
 //   O   O   O   O   O
 // Find the least value of n for which p(n) is divisible by one million.
-// Cost about 45 seconds when N = 100000
+// Cost about 33 seconds when N = 100000
 func PE78(L int) (ret int) {
 	const N int = 100000 // Add if find no answer
-
-	P0 := make([]int, N+1, N+1)
-	P2 := make([]int, N+1, N+1)
 	Pn := make([]int, N+1, N+1)
 
-	// P2[i] = 1
+	// P[2][i] = 1
 	for i := 0; i <= N; i++ {
-		P2[i] = 1
+		Pn[i] = 1
 	}
 
-	// Pn[i]
 	for n := 3; n <= N; n++ {
+		// Process bar
 		if n%1000 == 0 {
 			fmt.Print(EL + GreenStr("n = "+strconv.Itoa(n)))
 		}
-		// Pn[0..n-2]
-		for i := 0; i < n-1; i++ {
-			Pn[i] = P2[i]
-		}
-		// Pn[n-1..N]
+		// Calculate P[n][i]
+		// i = 0..n-2, P[n][i] = P[n-1][i]
+		// i = n-1..N, P[n][i] = P[n-1][i] + P[n][i-(n-1)]
 		for i := n - 1; i <= N; i++ {
-			Pn[i] = P2[i] + Pn[i-n+1]
+			Pn[i] += Pn[i-n+1]
+			// Avoid big number overflow
 			if Pn[i] > 1e8 {
 				Pn[i] %= 1e8
 			}
 		}
 		// Found!!!
+		// P[n][n] plus one  means include case that n itself as one plan.
 		if (Pn[n]+1)%L == 0 {
 			ret = n
 			fmt.Print(EL)
 			return
 		}
-		copy(P2, Pn)
-		copy(Pn, P0)
 	}
 	// Not Found!!!
 	fmt.Println(EL + RedStr("Find no answer, 10 times N and retry"))
