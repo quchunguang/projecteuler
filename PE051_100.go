@@ -1658,17 +1658,15 @@ func planPrime(maxindex int, remain int, preset []int) {
 //   OO   O   O   O
 //   O   O   O   O   O
 // Find the least value of n for which p(n) is divisible by one million.
-// Cost about 33 seconds when N = 100000
-func PE78(L int) (ret int) {
+// Cost about 32 seconds when N = 100000
+func PE78(L uint64) (ret int) {
 	const N int = 100000 // Add if find no answer
-	Pn := make([]int, N+1, N+1)
+	Pn := make([]uint64, N+1, N+1)
 
-	// P[2][i] = 1
-	for i := 0; i <= N; i++ {
-		Pn[i] = 1
-	}
+	// P[1][0] = 1; P[1][1..N] = 0
+	Pn[0] = 1
 
-	for n := 3; n <= N; n++ {
+	for n := 2; n <= N; n++ {
 		// Process bar
 		if n%1000 == 0 {
 			fmt.Print(EL + GreenStr("n = "+strconv.Itoa(n)))
@@ -1679,6 +1677,7 @@ func PE78(L int) (ret int) {
 		for i := n - 1; i <= N; i++ {
 			Pn[i] += Pn[i-n+1]
 			// Avoid big number overflow
+			// NOTE: Needs it even in unsigned int. It cut down when overflow by Binary, NOT Decimal!!!
 			if Pn[i] > 1e8 {
 				Pn[i] %= 1e8
 			}
