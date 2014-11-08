@@ -164,7 +164,7 @@ func PE53(N int) (ret int) {
 //
 // How many hands does Player 1 win?
 func PE54(filename string) (ret int) {
-	table := CSWs(filename, " ")
+	table := ReadMatrixWords(filename, " ", false)
 	for _, hand := range table {
 		p1 := hand[:5]
 		p2 := hand[5:]
@@ -520,7 +520,11 @@ func PE58() int {
 //
 // Your task has been made easy, as the encryption key consists of three lower case characters. Using cipher.txt (right click and 'Save Link/Target As...'), a file containing the encrypted ASCII codes, and the knowledge that the plain text must contain common English words, decrypt the message and find the sum of the ASCII values in the original text.
 func PE59(cipherfile string) (ret int) {
-	cipher := CSV(cipherfile)
+	cipherInts := ReadInts(cipherfile, ",")
+	var cipher []byte
+	for _, v := range cipherInts {
+		cipher = append(cipher, byte(v))
+	}
 	key := []byte("aaa")
 	for {
 		// Ten more words(in middle of a sentence) found in text.
@@ -1159,7 +1163,7 @@ func SolveDiophantine3(D int64) (x, y *big.Int) {
 //
 // NOTE: This is a much more difficult version of Problem 18. It is not possible to try every route to solve this problem, as there are 299 altogether! If you could check one trillion (1012) routes every second it would take over twenty billion years to check them all. There is an efficient algorithm to solve it. ;o)
 func PE67(filename string) int {
-	data := SST(filename)
+	data := ReadMatrixInts(filename, " ")
 	// Find biggest path
 	return findPathMax2(data)
 }
@@ -1718,7 +1722,10 @@ func PE80() (ret int) {
 // In the 5 by 5 matrix below, the minimal path sum from the top left to the bottom right, by only moving to the right and down, is indicated in bold red and is equal to 2427.
 //   \begin{pmatrix} \color{red}{131} & 673 & 234 & 103 & 18\\ \color{red}{201} & \color{red}{96} & \color{red}{342} & 965 & 150\\ 630 & 803 & \color{red}{746} & \color{red}{422} & 111\\ 537 & 699 & 497 & \color{red}{121} & 956\\ 805 & 732 & 524 & \color{red}{37} & \color{red}{331} \end{pmatrix}
 // Find the minimal path sum, in matrix.txt (right click and "Save Link/Target As..."), a 31K text file containing a 80 by 80 matrix, from the top left to the bottom right by only moving right and down.
-func PE81() (ret int) {
+func PE81(filename string) (ret int) {
+	data := ReadMatrixInts(filename, ",")
+	fmt.Println(len(data[0]))
+
 	return
 }
 

@@ -9,86 +9,94 @@ import (
 	"strings"
 )
 
-// file: "A","B","C", -> []string{"A", "B", "C"}. Trailing comer MUST have!
-func CSW(filename string) (words []string) {
+// Read line by line from text file and feed to a chan of string
+func ReadLine(filename string, lines chan string) {
 	file, err := os.Open(filename)
 	defer file.Close()
 	if err != nil {
 		fmt.Println(err)
 	}
-
-	reader := bufio.NewReader(file)
-	for {
-		line, err := reader.ReadString(',')
-		if err == io.EOF {
-			break
-		}
-		words = append(words, line[1:len(line)-2]) // "XXX",  -->  XXX
-	}
-	return
-}
-
-// file: 12,23,34, -> []byte{12, 23, 34}. Trailing comer MUST have!
-func CSV(filename string) (ret []byte) {
-	file, err := os.Open(filename)
-	defer file.Close()
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	reader := bufio.NewReader(file)
-	for {
-		line, err := reader.ReadString(',')
-		if err == io.EOF {
-			break
-		}
-		v, _ := strconv.Atoi(line[0 : len(line)-1]) // XXX,  -->  XXX
-		ret = append(ret, byte(v))
-	}
-	return
-}
-
-// file: 4H KH KS -> [][]string{{"4H", "KH", "KS"}, ...}
-func CSWs(filename string, sep string) (table [][]string) {
-	file, err := os.Open(filename)
-	defer file.Close()
-	if err != nil {
-		fmt.Println(err)
-	}
-
 	reader := bufio.NewReader(file)
 	for {
 		line, err := reader.ReadString('\n')
 		if err == io.EOF {
-			break
+			close(lines)
+			return
 		}
-		item := strings.Split(line[:len(line)-1], sep) // trim '\n' at the end
-		table = append(table, item)
+		lines <- line[:len(line)-1]
+	}
+}
+
+// "A","B","C" -> []string{"A", "B", "C"}, surround is true if quote surrounded.
+func ReadWords(filename, sep string, surround bool) (ret []string) {
+	lines := make(chan string)
+	go ReadLine(filename, lines)
+	for line := range lines {
+		svs := strings.Split(line, sep)
+		for _, item := range svs {
+			if surround {
+				ret = append(ret, item[1:len(item)-1]) // "XXX",  -->  XXX
+			} else {
+				ret = append(ret, item) // XXX,  -->  XXX
+			}
+		}
 	}
 	return
 }
 
-// Read triangle data, separate by space
-func SST(filepath string) (data [][]int) {
-	file, err := os.Open(filepath)
-	defer file.Close()
-	if err != nil {
-		fmt.Println(err)
+// file: 4H KH KS -> [][]string{{"4H", "KH", "KS"}, ...}, surround is true if quote surrounded.
+func ReadMatrixWords(filename, sep string, surround bool) (ret [][]string) {
+	lines := make(chan string)
+	go ReadLine(filename, lines)
+	for line := range lines {
+		svs := strings.Split(line, sep)
+		record := make([]string, len(svs))
+		for i, item := range svs {
+			if surround {
+				record[i] = item[1 : len(item)-1] // "XXX"  -->  XXX
+			} else {
+				record[i] = item
+			}
+		}
+		ret = append(ret, record)
 	}
-	reader := bufio.NewReader(file)
-	i := 0
-	for {
-		line, err := reader.ReadString('\n')
-		if err == io.EOF {
-			break
+	return
+}
+
+// 12,23,34 -> []int{12, 23, 34}.
+func ReadInts(filename, sep string) (ret []int) {
+	lines := make(chan string)
+	go ReadLine(filename, lines)
+	for line := range lines {
+		svs := strings.Split(line, sep)
+		for _, item := range svs {
+			v, err := strconv.Atoi(item)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+			ret = append(ret, v) // XXX,  -->  XXX
 		}
-		record := make([]int, i+1)
-		la := strings.Fields(line)
-		for j, item := range la {
-			record[j], _ = strconv.Atoi(item)
+	}
+	return
+}
+
+// 12,23\n45,56 -> [][]int{{12,23},{45,56}}.
+func ReadMatrixInts(filename, sep string) (ret [][]int) {
+	var err error
+	lines := make(chan string)
+	go ReadLine(filename, lines)
+	for line := range lines {
+		svs := strings.Split(line, sep)
+		record := make([]int, len(svs))
+		for i, item := range svs {
+			record[i], err = strconv.Atoi(item)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
 		}
-		data = append(data, record)
-		i++
+		ret = append(ret, record)
 	}
 	return
 }

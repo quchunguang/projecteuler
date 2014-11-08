@@ -717,7 +717,7 @@ func PE17(N int) (ret int) {
 //
 // NOTE: As there are only 16384 routes, it is possible to solve this problem by trying every route. However, Problem 67, is the same challenge with a triangle containing one-hundred rows; it cannot be solved by brute force, and requires a clever method! ;o)
 func PE18(filename string) int {
-	data := SST(filename)
+	data := ReadMatrixInts(filename, " ")
 	// Find biggest path
 	return findPathMax(data, 0, 0)
 }
@@ -837,7 +837,7 @@ func PE21(N int) (sum int) {
 //
 // What is the total of all the name scores in the file?
 func PE22(filename string) (ret int) {
-	words := CSW(filename)
+	words := ReadWords(filename, ",", true)
 	sort.Strings(words)
 
 	for i, w := range words {
@@ -1521,7 +1521,7 @@ func PE41() (ret int) {
 //
 // Using words.txt (right click and 'Save Link/Target As...'), a 16K text file containing nearly two-thousand common English words, how many are triangle words?
 func PE42(filename string) (ret int) {
-	words := CSW(filename)
+	words := ReadWords(filename, ",", true)
 	for _, w := range words {
 		if IsTriangle(SumAscii(w)) {
 			ret++
