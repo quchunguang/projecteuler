@@ -1724,8 +1724,49 @@ func PE80() (ret int) {
 // Find the minimal path sum, in matrix.txt (right click and "Save Link/Target As..."), a 31K text file containing a 80 by 80 matrix, from the top left to the bottom right by only moving right and down.
 func PE81(filename string) (ret int) {
 	data := ReadMatrixInts(filename, ",")
-	fmt.Println(len(data[0]))
 
+	// Check data square
+	length := len(data)
+	for _, v := range data {
+		if len(v) != length {
+			fmt.Println(RedStr("Not a square matrix. Abort."))
+			return
+		}
+	}
+
+	// sd[i][j].sm stores the minimal sum from (0,0) to (i,j), include itself.
+	// sd[i][j].right = true if the minimal path goes from left
+	// sd[i][j].right = false if the minimal path goes from top
+	sd := make([][]datai, length)
+	for i := 0; i < length; i++ {
+		sd[i] = make([]datai, length)
+	}
+
+	for i := 0; i < length; i++ {
+		for j := 0; j < length; j++ {
+			if i > 0 && j > 0 { // compare
+				if sd[i-1][j].sm < sd[i][j-1].sm {
+					sd[i][j].sm = sd[i-1][j].sm + data[i][j]
+					sd[i][j].right = false
+				} else {
+					sd[i][j].sm = sd[i][j-1].sm + data[i][j]
+					sd[i][j].right = true
+					if sd[i-1][j].sm == sd[i][j-1].sm {
+						fmt.Printf("Double route joined at (%d, %d)\n", i+1, j+1)
+					}
+				}
+			} else if i == 0 && j > 0 { // from left
+				sd[i][j].sm = sd[i][j-1].sm + data[i][j]
+				sd[i][j].right = true
+			} else if i > 0 && j == 0 { // from up
+				sd[i][j].sm = sd[i-1][j].sm + data[i][j]
+				sd[i][j].right = false
+			} else { // first node
+				sd[i][j].sm = data[i][j]
+			}
+		}
+	}
+	ret = sd[length-1][length-1].sm
 	return
 }
 
