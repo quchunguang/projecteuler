@@ -1169,8 +1169,8 @@ func PE67(filename string) int {
 }
 
 type datai struct {
-	sm    int  // Biggest sum
-	right bool // Previous item go to here from right path?(or left)
+	sm int // Biggest sum
+	d  int // From 0:left 1:right 2:above 3:bottom
 }
 
 func findPathMax2(data [][]int) (ret int) {
@@ -1186,20 +1186,20 @@ func findPathMax2(data [][]int) (ret int) {
 	for i := 1; i < N; i++ {
 		//j==0
 		sd[i][0].sm = sd[i-1][0].sm + data[i][0]
-		sd[i][0].right = true
+		sd[i][0].d = 1
 		//j==1..i-1
 		for j := 1; j < i; j++ {
 			if sd[i-1][j-1].sm > sd[i-1][j].sm {
 				sd[i][j].sm = sd[i-1][j-1].sm + data[i][j]
-				sd[i][j].right = false
+				sd[i][j].d = 0
 			} else {
 				sd[i][j].sm = sd[i-1][j].sm + data[i][j]
-				sd[i][j].right = true
+				sd[i][j].d = 1
 			}
 		}
 		//j==i
 		sd[i][i].sm = sd[i-1][i-1].sm + data[i][i]
-		sd[i][i].right = false
+		sd[i][i].d = 0
 	}
 
 	// Get result
@@ -1211,7 +1211,7 @@ func findPathMax2(data [][]int) (ret int) {
 		}
 	}
 	for i := N - 2; i >= 0; i-- {
-		if sd[i+1][rets[i+1]].right {
+		if sd[i+1][rets[i+1]].d == 1 {
 			rets[i] = rets[i+1]
 		} else {
 			rets[i] = rets[i+1] - 1
@@ -1724,19 +1724,11 @@ func PE80() (ret int) {
 // Find the minimal path sum, in matrix.txt (right click and "Save Link/Target As..."), a 31K text file containing a 80 by 80 matrix, from the top left to the bottom right by only moving right and down.
 func PE81(filename string) (ret int) {
 	data := ReadMatrixInts(filename, ",")
-
-	// Check data square
-	length := len(data)
-	for _, v := range data {
-		if len(v) != length {
-			fmt.Println(RedStr("Not a square matrix. Abort."))
-			return
-		}
-	}
+	length := CheckMatrixLen(data)
 
 	// sd[i][j].sm stores the minimal sum from (0,0) to (i,j), include itself.
-	// sd[i][j].right = true if the minimal path goes from left
-	// sd[i][j].right = false if the minimal path goes from top
+	// sd[i][j].d = 0 if the minimal path goes from left to here
+	// sd[i][j].d = 2 if the minimal path goes from top to here
 	sd := make([][]datai, length)
 	for i := 0; i < length; i++ {
 		sd[i] = make([]datai, length)
@@ -1747,26 +1739,41 @@ func PE81(filename string) (ret int) {
 			if i > 0 && j > 0 { // compare
 				if sd[i-1][j].sm < sd[i][j-1].sm {
 					sd[i][j].sm = sd[i-1][j].sm + data[i][j]
-					sd[i][j].right = false
+					sd[i][j].d = 2
 				} else {
 					sd[i][j].sm = sd[i][j-1].sm + data[i][j]
-					sd[i][j].right = true
+					sd[i][j].d = 0
 					if sd[i-1][j].sm == sd[i][j-1].sm {
 						fmt.Printf("Double route joined at (%d, %d)\n", i+1, j+1)
 					}
 				}
 			} else if i == 0 && j > 0 { // from left
 				sd[i][j].sm = sd[i][j-1].sm + data[i][j]
-				sd[i][j].right = true
+				sd[i][j].d = 0
 			} else if i > 0 && j == 0 { // from up
 				sd[i][j].sm = sd[i-1][j].sm + data[i][j]
-				sd[i][j].right = false
+				sd[i][j].d = 2
 			} else { // first node
 				sd[i][j].sm = data[i][j]
 			}
 		}
 	}
 	ret = sd[length-1][length-1].sm
+
+	// Generate svg illustration
+	PE81_svg(data, sd)
+	return
+}
+
+// return length of matrix if matrix is square, -1 otherwise.
+func CheckMatrixLen(data [][]int) (length int) {
+	length = len(data)
+	for _, v := range data {
+		if len(v) != length {
+			fmt.Println(RedStr("Not a square matrix. Abort."))
+			return -1
+		}
+	}
 	return
 }
 
@@ -1775,7 +1782,56 @@ func PE81(filename string) (ret int) {
 //The minimal path sum in the 5 by 5 matrix below, by starting in any cell in the left column and finishing in any cell in the right column, and only moving up, down, and right, is indicated in red and bold; the sum is equal to 994.
 //   \begin{pmatrix} \color{red}{131} & 673 & 234 & 103 & 18\\ \color{red}{201} & \color{red}{96} & \color{red}{342} & 965 & 150\\ 630 & 803 & \color{red}{746} & \color{red}{422} & 111\\ 537 & 699 & 497 & \color{red}{121} & 956\\ 805 & 732 & 524 & \color{red}{37} & \color{red}{331} \end{pmatrix}
 //Find the minimal path sum, in matrix.txt (right click and "Save Link/Target As..."), a 31K text file containing a 80 by 80 matrix, from the left column to the right column.
-func PE82() (ret int) {
+func PE82(filename string) (ret int) {
+	data := ReadMatrixInts(filename, ",")
+	length := CheckMatrixLen(data)
+
+	// sd[i][j].sm stores the minimal sum from (0,0) to (i,j), include itself.
+	// sd[i][j].d = 0 if the minimal path goes from left to here
+	// sd[i][j].d = 2 if the minimal path goes from top to here
+	// sd[i][j].d = 3 if the minimal path goes from bottom to here
+	sd := make([][]datai, length)
+	for i := 0; i < length; i++ {
+		sd[i] = make([]datai, length)
+	}
+
+	// First column case, no up/down flow for we can start at any location.
+	for i := 0; i < length; i++ {
+		sd[i][0].sm = data[i][0]
+		sd[i][0].d = 0
+	}
+
+	for j := 1; j < length; j++ { // for columns left to right
+		// Suppose goes from left first
+		for i := 0; i < length; i++ {
+			sd[i][j].sm = sd[i][j-1].sm + data[i][j]
+			sd[i][j].d = 0
+		}
+		for i := 0; i < length; i++ {
+			if i > 0 && j > 0 { // compare
+				if sd[i-1][j].sm < sd[i][j-1].sm {
+					sd[i][j].sm = sd[i-1][j].sm + data[i][j]
+					sd[i][j].d = 2
+				} else {
+					sd[i][j].sm = sd[i][j-1].sm + data[i][j]
+					sd[i][j].d = 0
+					if sd[i-1][j].sm == sd[i][j-1].sm {
+						fmt.Printf("Double route joined at (%d, %d)\n", i+1, j+1)
+					}
+				}
+			} else if i == 0 && j > 0 { // from left
+				sd[i][j].sm = sd[i][j-1].sm + data[i][j]
+				sd[i][j].d = 0
+			} else if i > 0 && j == 0 { // from up
+				sd[i][j].sm = sd[i-1][j].sm + data[i][j]
+				sd[i][j].d = 2
+			} else { // first node
+				sd[i][j].sm = data[i][j]
+			}
+		}
+	}
+	ret = sd[length-1][length-1].sm
+
 	return
 }
 
@@ -1784,7 +1840,7 @@ func PE82() (ret int) {
 // In the 5 by 5 matrix below, the minimal path sum from the top left to the bottom right, by moving left, right, up, and down, is indicated in bold red and is equal to 2297.
 //   \begin{pmatrix} \color{red}{131} & 673 & 234 & 103 & 18\\ \color{red}{201} & \color{red}{96} & \color{red}{342} & 965 & 150\\ 630 & 803 & \color{red}{746} & \color{red}{422} & 111\\ 537 & 699 & 497 & \color{red}{121} & 956\\ 805 & 732 & 524 & \color{red}{37} & \color{red}{331} \end{pmatrix}
 // Find the minimal path sum, in matrix.txt (right click and "Save Link/Target As..."), a 31K text file containing a 80 by 80 matrix, from the top left to the bottom right by moving left, right, up, and down.
-func PE83() (ret int) {
+func PE83(filename string) (ret int) {
 	return
 }
 
