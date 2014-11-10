@@ -1168,9 +1168,18 @@ func PE67(filename string) int {
 	return findPathMax2(data)
 }
 
+// direction
+const (
+	LEFT_TO_HERE  = 0
+	RIGHT_TO_HERE = 1
+	ABOVE_TO_HERE = 2
+	BELOW_TO_HERE = 3
+	SELECTED_FLAG = 1 << 4
+)
+
 type datai struct {
 	sm int // Biggest sum
-	d  int // From 0:left 1:right 2:above 3:bottom
+	d  int // From what direction to here
 }
 
 func findPathMax2(data [][]int) (ret int) {
@@ -1186,20 +1195,20 @@ func findPathMax2(data [][]int) (ret int) {
 	for i := 1; i < N; i++ {
 		//j==0
 		sd[i][0].sm = sd[i-1][0].sm + data[i][0]
-		sd[i][0].d = 1
+		sd[i][0].d = RIGHT_TO_HERE
 		//j==1..i-1
 		for j := 1; j < i; j++ {
 			if sd[i-1][j-1].sm > sd[i-1][j].sm {
 				sd[i][j].sm = sd[i-1][j-1].sm + data[i][j]
-				sd[i][j].d = 0
+				sd[i][j].d = LEFT_TO_HERE
 			} else {
 				sd[i][j].sm = sd[i-1][j].sm + data[i][j]
-				sd[i][j].d = 1
+				sd[i][j].d = RIGHT_TO_HERE
 			}
 		}
 		//j==i
 		sd[i][i].sm = sd[i-1][i-1].sm + data[i][i]
-		sd[i][i].d = 0
+		sd[i][i].d = LEFT_TO_HERE
 	}
 
 	// Get result
@@ -1211,7 +1220,7 @@ func findPathMax2(data [][]int) (ret int) {
 		}
 	}
 	for i := N - 2; i >= 0; i-- {
-		if sd[i+1][rets[i+1]].d == 1 {
+		if sd[i+1][rets[i+1]].d == RIGHT_TO_HERE {
 			rets[i] = rets[i+1]
 		} else {
 			rets[i] = rets[i+1] - 1
@@ -1727,8 +1736,6 @@ func PE81(filename string) (ret int) {
 	length := CheckMatrixLen(data)
 
 	// sd[i][j].sm stores the minimal sum from (0,0) to (i,j), include itself.
-	// sd[i][j].d = 0 if the minimal path goes from left to here
-	// sd[i][j].d = 2 if the minimal path goes from top to here
 	sd := make([][]datai, length)
 	for i := 0; i < length; i++ {
 		sd[i] = make([]datai, length)
@@ -1739,20 +1746,20 @@ func PE81(filename string) (ret int) {
 			if i > 0 && j > 0 { // compare
 				if sd[i-1][j].sm < sd[i][j-1].sm {
 					sd[i][j].sm = sd[i-1][j].sm + data[i][j]
-					sd[i][j].d = 2
+					sd[i][j].d = ABOVE_TO_HERE
 				} else {
 					sd[i][j].sm = sd[i][j-1].sm + data[i][j]
-					sd[i][j].d = 0
+					sd[i][j].d = LEFT_TO_HERE
 					if sd[i-1][j].sm == sd[i][j-1].sm {
 						fmt.Printf("Double route joined at (%d, %d)\n", i+1, j+1)
 					}
 				}
 			} else if i == 0 && j > 0 { // from left
 				sd[i][j].sm = sd[i][j-1].sm + data[i][j]
-				sd[i][j].d = 0
+				sd[i][j].d = LEFT_TO_HERE
 			} else if i > 0 && j == 0 { // from up
 				sd[i][j].sm = sd[i-1][j].sm + data[i][j]
-				sd[i][j].d = 2
+				sd[i][j].d = ABOVE_TO_HERE
 			} else { // first node
 				sd[i][j].sm = data[i][j]
 			}
@@ -1787,9 +1794,6 @@ func PE82(filename string) (ret int) {
 	length := CheckMatrixLen(data)
 
 	// sd[i][j].sm stores the minimal sum from (0,0) to (i,j), include itself.
-	// sd[i][j].d = 0 if the minimal path goes from left to here
-	// sd[i][j].d = 2 if the minimal path goes from top to here
-	// sd[i][j].d = 3 if the minimal path goes from bottom to here
 	sd := make([][]datai, length)
 	for i := 0; i < length; i++ {
 		sd[i] = make([]datai, length)
@@ -1798,39 +1802,53 @@ func PE82(filename string) (ret int) {
 	// First column case, no up/down flow for we can start at any location.
 	for i := 0; i < length; i++ {
 		sd[i][0].sm = data[i][0]
-		sd[i][0].d = 0
+		sd[i][0].d = LEFT_TO_HERE
 	}
 
 	for j := 1; j < length; j++ { // for columns left to right
-		// Suppose goes from left first
+		// Suppose goes from left at first
 		for i := 0; i < length; i++ {
 			sd[i][j].sm = sd[i][j-1].sm + data[i][j]
-			sd[i][j].d = 0
+			sd[i][j].d = LEFT_TO_HERE
 		}
-		for i := 0; i < length; i++ {
-			if i > 0 && j > 0 { // compare
-				if sd[i-1][j].sm < sd[i][j-1].sm {
-					sd[i][j].sm = sd[i-1][j].sm + data[i][j]
-					sd[i][j].d = 2
-				} else {
-					sd[i][j].sm = sd[i][j-1].sm + data[i][j]
-					sd[i][j].d = 0
-					if sd[i-1][j].sm == sd[i][j-1].sm {
-						fmt.Printf("Double route joined at (%d, %d)\n", i+1, j+1)
-					}
+		// i == 0
+		if sd[0][j].sm > sd[1][j].sm+data[0][j] {
+			sd[0][j].sm = sd[1][j].sm + data[0][j]
+			sd[0][j].d = BELOW_TO_HERE
+		}
+		for i := 1; i < length-1; i++ {
+			above := sd[i-1][j].sm + data[i-1][j]
+			below := sd[i+1][j].sm + data[i][j]
+
+			if sd[i][j].sm > below && above > below {
+				sd[i][j].sm = below
+				sd[i][j].d = BELOW_TO_HERE
+				for t := 1; i-t >= 0 && sd[i-t][j].sm > sd[i-t+1][j].sm+data[i-t][j]; t++ {
+					sd[i-t][j].sm = sd[i-t+1][j].sm + data[i-t][j]
+					sd[i-t][j].d = BELOW_TO_HERE
 				}
-			} else if i == 0 && j > 0 { // from left
-				sd[i][j].sm = sd[i][j-1].sm + data[i][j]
-				sd[i][j].d = 0
-			} else if i > 0 && j == 0 { // from up
-				sd[i][j].sm = sd[i-1][j].sm + data[i][j]
-				sd[i][j].d = 2
-			} else { // first node
-				sd[i][j].sm = data[i][j]
+			} else if sd[i][j].sm > above && below > above {
+				sd[i][j].sm = above
+				sd[i][j].d = ABOVE_TO_HERE
+				// if sd[i-1][j].sm == sd[i][j-1].sm {
+				// 	fmt.Printf("Double route joined at (%d, %d)\n", i+1, j+1)
+				// }
 			}
 		}
+		// i == length-1
+		if sd[length-1][j].sm > sd[length-2][j].sm+data[length-1][j] {
+			sd[length-1][j].sm = sd[length-2][j].sm + data[length-1][j]
+			sd[length-1][j].d = ABOVE_TO_HERE
+		}
 	}
-	ret = sd[length-1][length-1].sm
+
+	// Find Smallest in sd[i][length-1] and return
+	ret = sd[0][length-1].sm
+	for i := 1; i < length; i++ {
+		if sd[i][length-1].sm < ret {
+			ret = sd[i][length-1].sm
+		}
+	}
 
 	return
 }
