@@ -159,6 +159,17 @@ func DigitsInts(digits string) (ret []int) {
 	return
 }
 
+// "1.414" -> 10
+func SumDigits(s string) (ret int) {
+	for _, c := range s {
+		v := int(c - 0x30)
+		if v >= 0 && v < 10 {
+			ret += v
+		}
+	}
+	return
+}
+
 func IntsDigits(ints []int) (ret string) {
 	for _, v := range ints {
 		ret += strconv.Itoa(v)

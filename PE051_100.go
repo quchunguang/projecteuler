@@ -1723,6 +1723,29 @@ func PE79(filename string) (ret int) {
 // The square root of two is 1.41421356237309504880..., and the digital sum of the first one hundred decimal digits is 475.
 // For the first one hundred natural numbers, find the total of the digital sums of the first one hundred decimal digits for all the irrational square roots.
 func PE80() (ret int) {
+	const e = 2 // e == 1 will cause sqrt(5) error
+	var list []int64
+	var s, ss string
+	for n := 1; n <= 100; n++ {
+		head, period := ContinueFraction(int64(n))
+		if len(period) == 0 {
+			continue
+		}
+		length := 100 - len(strconv.Itoa(int(head)))
+		list = nil
+		for {
+			list = append(list, period...)
+			rat := ContinueFractionSimplify(head, list)
+			s = rat.FloatString(length + e)
+			if s == ss {
+				break
+			}
+			ss = s
+		}
+		ret += SumDigits(s[:len(s)-e])
+		// fmt.Println(s, n, head, period, SumDigits(s[:len(s)-e]))
+	}
+
 	return
 }
 
@@ -1805,12 +1828,15 @@ func PE82(filename string) (ret int) {
 		sd[i][0].d = LEFT_TO_HERE
 	}
 
+	// When j == length-1, should not scan up-down or down-up. But it not
+	// affect the result for the smallest one will never be changed.
 	for j := 1; j < length; j++ { // for columns left to right
 		// Suppose goes from left at first
 		for i := 0; i < length; i++ {
 			sd[i][j].sm = sd[i][j-1].sm + data[i][j]
 			sd[i][j].d = LEFT_TO_HERE
 		}
+		// Scan smaller above item
 		for i := 1; i < length; i++ {
 			above := sd[i-1][j].sm + data[i][j]
 			if sd[i][j].sm > above {
@@ -1818,6 +1844,7 @@ func PE82(filename string) (ret int) {
 				sd[i][j].d = ABOVE_TO_HERE
 			}
 		}
+		// Scan smaller below item
 		for i := length - 2; i >= 0; i-- {
 			below := sd[i+1][j].sm + data[i][j]
 			if sd[i][j].sm > below {
