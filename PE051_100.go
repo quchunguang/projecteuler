@@ -1170,10 +1170,10 @@ func PE67(filename string) int {
 
 // direction
 const (
-	LEFT_TO_HERE  = 0
-	RIGHT_TO_HERE = 1
-	ABOVE_TO_HERE = 2
-	BELOW_TO_HERE = 3
+	LEFT_TO_HERE  = 1
+	RIGHT_TO_HERE = 1 << 1
+	ABOVE_TO_HERE = 1 << 2
+	BELOW_TO_HERE = 1 << 3
 	SELECTED_FLAG = 1 << 4
 )
 
@@ -1811,45 +1811,31 @@ func PE82(filename string) (ret int) {
 			sd[i][j].sm = sd[i][j-1].sm + data[i][j]
 			sd[i][j].d = LEFT_TO_HERE
 		}
-		// i == 0
-		if sd[0][j].sm > sd[1][j].sm+data[0][j] {
-			sd[0][j].sm = sd[1][j].sm + data[0][j]
-			sd[0][j].d = BELOW_TO_HERE
-		}
-		for i := 1; i < length-1; i++ {
-			above := sd[i-1][j].sm + data[i-1][j]
-			below := sd[i+1][j].sm + data[i][j]
-
-			if sd[i][j].sm > below && above > below {
-				sd[i][j].sm = below
-				sd[i][j].d = BELOW_TO_HERE
-				for t := 1; i-t >= 0 && sd[i-t][j].sm > sd[i-t+1][j].sm+data[i-t][j]; t++ {
-					sd[i-t][j].sm = sd[i-t+1][j].sm + data[i-t][j]
-					sd[i-t][j].d = BELOW_TO_HERE
-				}
-			} else if sd[i][j].sm > above && below > above {
+		for i := 1; i < length; i++ {
+			above := sd[i-1][j].sm + data[i][j]
+			if sd[i][j].sm > above {
 				sd[i][j].sm = above
 				sd[i][j].d = ABOVE_TO_HERE
-				// if sd[i-1][j].sm == sd[i][j-1].sm {
-				// 	fmt.Printf("Double route joined at (%d, %d)\n", i+1, j+1)
-				// }
 			}
 		}
-		// i == length-1
-		if sd[length-1][j].sm > sd[length-2][j].sm+data[length-1][j] {
-			sd[length-1][j].sm = sd[length-2][j].sm + data[length-1][j]
-			sd[length-1][j].d = ABOVE_TO_HERE
+		for i := length - 2; i >= 0; i-- {
+			below := sd[i+1][j].sm + data[i][j]
+			if sd[i][j].sm > below {
+				sd[i][j].sm = below
+				sd[i][j].d = BELOW_TO_HERE
+			}
 		}
 	}
 
 	// Find Smallest in sd[i][length-1] and return
-	ret = sd[0][length-1].sm
-	for i := 1; i < length; i++ {
+	ret = MaxInt
+	for i := 0; i < length; i++ {
 		if sd[i][length-1].sm < ret {
 			ret = sd[i][length-1].sm
 		}
 	}
-
+	// Generate svg illustration
+	PE82_svg(data, sd)
 	return
 }
 

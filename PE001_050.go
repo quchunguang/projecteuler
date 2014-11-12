@@ -1604,7 +1604,7 @@ func isSubStrDiv(strnum string) bool {
 //
 // Find the pair of pentagonal numbers, Pj and Pk, for which their sum and difference are pentagonal and D = |Pk − Pj| is minimised; what is the value of D?
 func PE44() (ret int) {
-	ret = 1 << 30
+	ret = MaxInt
 	for i := 2; ; i++ {
 		GenPentagons(Pentagonal(i))
 		for j := 1; j < i; j++ {
