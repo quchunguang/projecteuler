@@ -1927,7 +1927,39 @@ func PE84() (ret int) {
 //
 // By counting carefully it can be seen that a rectangular grid measuring 3 by 2 contains eighteen rectangles:
 // Although there exists no rectangular grid that contains exactly two million rectangles, find the area of the grid with the nearest solution.
-func PE85() (ret int) {
+func PE85(L int) (ret int) {
+	var M, N int
+	var d int = MaxInt
+
+	// S(m, 1) = m(m+1)/2, solve lm when S(lm, 1) >= L
+	lm := int(math.Sqrt(float64(L*2))) + 1
+	sum := make([]int, lm+1)
+
+	// P(m, n):
+	//         n\m  1    2    3
+	//        1    1*1  1*2  1*3
+	//        2    2*1  2*2  2*3
+	//        3    3*1  3*2  3*3
+	// S(m, n) = Sum(i<=m,j<=n)P(i,j)
+	for n := 1; n <= lm; n++ {
+		s := 0
+		for m := 1; m <= lm; m++ {
+			s += m * n
+			sum[m] += s
+			if sum[m] >= L {
+				if L-sum[m-1] < d {
+					d = L - sum[m-1]
+					M, N = m-1, n
+				}
+				if sum[m]-L < d {
+					d = sum[m] - L
+					M, N = m, n
+				}
+				break
+			}
+		}
+	}
+	ret = M * N
 	return
 }
 
