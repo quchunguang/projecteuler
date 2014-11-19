@@ -10,7 +10,7 @@ Document
 For problem description, problem 10 for example, run
 
 ```sh
-godoc github.com/quchunguang/projecteuler PE10`
+godoc github.com/quchunguang/projecteuler PE10
 ```
 
 or direct access official version at [https://projecteuler.net/problem=10]
