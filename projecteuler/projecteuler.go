@@ -92,7 +92,7 @@ func main() {
 	// fmt.Println(projecteuler.PE83("p083_matrix.txt"))
 	// fmt.Println(projecteuler.PE84())
 	// fmt.Println(projecteuler.PE85(2e6))
-	fmt.Println(projecteuler.PE86())
+	fmt.Println(projecteuler.PE86(1e2))
 	// fmt.Println(projecteuler.PE87())
 	// fmt.Println(projecteuler.PE88())
 	// fmt.Println(projecteuler.PE89())
