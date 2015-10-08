@@ -23,3 +23,10 @@ func (s SortIntStr) Swap(i, j int) {
 func (s SortIntStr) Len() int {
 	return len(s)
 }
+
+//////
+type ByteSlice []byte
+
+func (a ByteSlice) Len() int           { return len(a) }
+func (a ByteSlice) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a ByteSlice) Less(i, j int) bool { return a[i] < a[j] }

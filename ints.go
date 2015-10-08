@@ -156,3 +156,14 @@ func Gcd(m, n int) int {
 	}
 	return n
 }
+
+// Return Max int from []int
+func MaxInts(slice []int) int {
+	var ret int = 0
+	for _, v := range slice {
+		if ret < v {
+			ret = v
+		}
+	}
+	return ret
+}

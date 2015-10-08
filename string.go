@@ -1,6 +1,7 @@
 package projecteuler
 
 import (
+	"bytes"
 	"fmt"
 	"sort"
 	"strconv"
@@ -212,4 +213,17 @@ func IsSameStr(s string) bool {
 		}
 	}
 	return true
+}
+
+// Check if two words are anagrams
+func IsAnagram(a, b string) bool {
+	ba := ByteSlice(a)
+	bb := ByteSlice(b)
+	sort.Sort(ba)
+	sort.Sort(bb)
+	if bytes.Equal(ba, bb) {
+		return true
+	} else {
+		return false
+	}
 }

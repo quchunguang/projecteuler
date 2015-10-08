@@ -92,7 +92,7 @@ func main() {
 	// fmt.Println(projecteuler.PE83("p083_matrix.txt"))
 	// fmt.Println(projecteuler.PE84())
 	// fmt.Println(projecteuler.PE85(2e6))
-	fmt.Println(projecteuler.PE86(1e2))
+	// fmt.Println(projecteuler.PE86(1e2))
 	// fmt.Println(projecteuler.PE87())
 	// fmt.Println(projecteuler.PE88())
 	// fmt.Println(projecteuler.PE89())
@@ -104,7 +104,7 @@ func main() {
 	// fmt.Println(projecteuler.PE95())
 	// fmt.Println(projecteuler.PE96())
 	// fmt.Println(projecteuler.PE97())
-	// fmt.Println(projecteuler.PE98())
+	fmt.Println(projecteuler.PE98("p098_words.txt"))
 	// fmt.Println(projecteuler.PE99("p099_base_exp.txt"))
 	// fmt.Println(projecteuler.PE100())
 

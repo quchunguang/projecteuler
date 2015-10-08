@@ -2070,9 +2070,88 @@ func PE97() (ret int64) {
 }
 
 // Problem 98 - Anagramic squares
+// By replacing each of the letters in the word CARE with 1, 2, 9, and 6 respectively, we form a square number: 1296 = 362. What is remarkable is that, by using the same digital substitutions, the anagram, RACE, also forms a square number: 9216 = 962. We shall call CARE (and RACE) a square anagram word pair and specify further that leading zeroes are not permitted, neither may a different letter have the same digital value as another letter.
 //
-func PE98() (ret int) {
-	return
+// Using words.txt (right click and 'Save Link/Target As...'), a 16K text file containing nearly two-thousand common English words, find all the square anagram word pairs (a palindromic word is NOT considered to be an anagram of itself).
+//
+// What is the largest square number formed by any member of such a pair?
+//
+// NOTE: All anagrams formed must be contained in the given text file.
+func PE98(filename string) (ret int) {
+	words := ReadWords(filename, ",", true)
+	lenwords := make(map[int][]string)
+	for _, w := range words {
+		lenwords[len(w)] = append(lenwords[len(w)], w)
+	}
+
+	keys := make([]int, 0, len(lenwords))
+	for k := range lenwords {
+		keys = append(keys, k)
+	}
+	sort.Sort(sort.IntSlice(keys))
+
+	for _, lenth := range keys {
+		GenSquares(int(math.Pow10(lenth)))
+		for i, wi := range lenwords[lenth] {
+			for j, wj := range lenwords[lenth] {
+				if i >= j {
+					continue
+				}
+				if IsAnagram(wi, wj) {
+					CheckSqrReplace([]byte(wi), []byte(wj))
+				}
+			}
+		}
+	}
+
+	return MaxInts(PE98Ret)
+}
+
+var PE98Ret []int
+
+func CheckSqrReplace(a, b []byte) {
+	min := int(math.Pow10(len(a) - 1))
+	max := int(math.Pow10(len(a)))
+	for _, ai := range Squares {
+		if ai < min {
+			continue
+		}
+		if ai >= max {
+			break
+		}
+		m := make(map[byte]byte)
+		g := make([]byte, len(a))
+		var bi int
+		pat := []byte(strconv.Itoa(ai))
+		if pat[0] == '0' {
+			continue
+		}
+		for i, x := range pat {
+			for j, y := range pat {
+				if i != j && x == y {
+					goto NEXT
+				}
+			}
+		}
+
+		for i, char := range a {
+			m[char] = pat[i]
+		}
+
+		for i, char := range b {
+			g[i] = m[char]
+		}
+
+		if g[0] == '0' {
+			continue
+		}
+		bi, _ = strconv.Atoi(string(g))
+		if InInts(Squares, bi) {
+			fmt.Println(string(a), string(b), ai, bi)
+			PE98Ret = append(PE98Ret, ai, bi)
+		}
+	NEXT:
+	}
 }
 
 // Problem 99 - Largest exponential

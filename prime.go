@@ -175,3 +175,16 @@ func IsPrime(n int) bool {
 	}
 	return true
 }
+
+var Squares []int
+
+func GenSquares(max int) {
+	start := len(Squares)
+	if start*start >= max {
+		return
+	}
+
+	for i := start + 1; i*i <= max; i++ {
+		Squares = append(Squares, i*i)
+	}
+}
