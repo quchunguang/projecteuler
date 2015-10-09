@@ -1,3 +1,7 @@
+// By default, txt files from http://projecteuler.org missed a newline character at the end of the files.
+// That will cause issues when read files line by line.
+// I add newline character for all txt files as well.
+// Sublime Text will do this by simply open and save.
 package projecteuler
 
 import (

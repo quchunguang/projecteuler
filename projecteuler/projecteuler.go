@@ -102,9 +102,9 @@ func main() {
 	// fmt.Println(projecteuler.PE93())
 	// fmt.Println(projecteuler.PE94())
 	// fmt.Println(projecteuler.PE95())
-	// fmt.Println(projecteuler.PE96())
+	fmt.Println(projecteuler.PE96("p096_sudoku.txt"))
 	// fmt.Println(projecteuler.PE97())
-	fmt.Println(projecteuler.PE98("p098_words.txt"))
+	// fmt.Println(projecteuler.PE98("p098_words.txt"))
 	// fmt.Println(projecteuler.PE99("p099_base_exp.txt"))
 	// fmt.Println(projecteuler.PE100())
 

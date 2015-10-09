@@ -2043,7 +2043,74 @@ func PE95() (ret int) {
 
 // Problem 96 - Su Doku
 //
-func PE96() (ret int) {
+// Su Doku (Japanese meaning number place) is the name given to a popular puzzle concept. Its origin is unclear, but credit must be attributed to Leonhard Euler who invented a similar, and much more difficult, puzzle idea called Latin Squares. The objective of Su Doku puzzles, however, is to replace the blanks (or zeros) in a 9 by 9 grid in such that each row, column, and 3 by 3 box contains each of the digits 1 to 9. Below is an example of a typical starting puzzle grid and its solution grid.
+//
+// A well constructed Su Doku puzzle has a unique solution and can be solved by logic, although it may be necessary to employ "guess and test" methods in order to eliminate options (there is much contested opinion over this). The complexity of the search determines the difficulty of the puzzle; the example above is considered easy because it can be solved by straight forward direct deduction.
+//
+// The 6K text file, sudoku.txt (right click and 'Save Link/Target As...'), contains fifty different Su Doku puzzles ranging in difficulty, but all with unique solutions (the first puzzle in the file is the example above).
+//
+// By solving all fifty puzzles find the sum of the 3-digit numbers found in the top left corner of each solution grid; for example, 483 is the 3-digit number found in the top left corner of the solution grid above.
+func PE96(filename string) (ret int) {
+	games := ReadAllSudoku(filename)
+
+	for i, game := range games {
+		// Solve one Su Duku game
+		// SolveSuduko(game)
+		fmt.Println(i, "Solved.")
+
+		// Collect answer
+		anss := game[0][:3]
+		ans := int(anss[0])*100 + int(anss[1])*10 + int(anss[2])
+		ret += ans
+	}
+	SolveSuduko(games[0])
+	return
+}
+
+type Suduku [9][9]byte
+type sudukuTryItem []byte
+type sudukuTry [9][9]sudukuTryItem
+
+func SolveSuduko(game *Suduku) {
+	var cur sudukuTry
+	for i := 0; i < 9; i++ {
+		for j := 0; j < 9; j++ {
+			if game[i][j] == 0 {
+				cur[i][j] = append(cur[i][j], 1, 2, 3, 4, 5, 6, 7, 8, 9)
+			} else {
+				cur[i][j] = append(cur[i][j], game[i][j])
+			}
+		}
+	}
+	fmt.Println(game)
+	fmt.Println(cur)
+}
+
+func ReadAllSudoku(filename string) (ret []*Suduku) {
+	// Read file line by line
+	lines := make(chan string)
+	go ReadLine(filename, lines)
+
+	var lineno int = 0
+	var suduku *Suduku
+	for line := range lines {
+		// Skip title line
+		if line[:4] == "Grid" {
+			suduku = new(Suduku)
+			lineno = 0
+			continue
+		}
+		// Get data
+		for i := 0; i < 9; i++ {
+			suduku[lineno][i] = byte(line[i]) - '0'
+		}
+		// Last line of a puzzle
+		if lineno == 8 {
+			ret = append(ret, suduku)
+			continue
+		}
+		lineno++
+	}
 	return
 }
 
@@ -2078,32 +2145,44 @@ func PE97() (ret int64) {
 //
 // NOTE: All anagrams formed must be contained in the given text file.
 func PE98(filename string) (ret int) {
+	// Get all words from file
 	words := ReadWords(filename, ",", true)
+
+	// Map all words by its length
 	lenwords := make(map[int][]string)
 	for _, w := range words {
 		lenwords[len(w)] = append(lenwords[len(w)], w)
 	}
 
+	// Sort all keys of lenwords to keys
+	// Beauty output, but not necessary
 	keys := make([]int, 0, len(lenwords))
 	for k := range lenwords {
 		keys = append(keys, k)
 	}
 	sort.Sort(sort.IntSlice(keys))
 
+	// Travels lenwords in order of word length
 	for _, lenth := range keys {
 		GenSquares(int(math.Pow10(lenth)))
+
+		// Travels any two words (with same length)
 		for i, wi := range lenwords[lenth] {
 			for j, wj := range lenwords[lenth] {
+				// Skip same words
 				if i >= j {
 					continue
 				}
+				// Check if the pare of words are anagram
 				if IsAnagram(wi, wj) {
+					// Find all possible square-pare replacements
 					CheckSqrReplace([]byte(wi), []byte(wj))
 				}
 			}
 		}
 	}
 
+	// Max one of all possible square numbers is the final answer
 	return MaxInts(PE98Ret)
 }
 
@@ -2113,19 +2192,25 @@ func CheckSqrReplace(a, b []byte) {
 	min := int(math.Pow10(len(a) - 1))
 	max := int(math.Pow10(len(a)))
 	for _, ai := range Squares {
+		// Check if ai in the boundary of same digital length
 		if ai < min {
 			continue
 		}
 		if ai >= max {
 			break
 		}
+
 		m := make(map[byte]byte)
 		g := make([]byte, len(a))
 		var bi int
 		pat := []byte(strconv.Itoa(ai))
+
+		// Leading number of patten can not be zero
 		if pat[0] == '0' {
 			continue
 		}
+
+		// A digital number should appears once in patten
 		for i, x := range pat {
 			for j, y := range pat {
 				if i != j && x == y {
@@ -2134,18 +2219,23 @@ func CheckSqrReplace(a, b []byte) {
 			}
 		}
 
+		// Map characters of a to characters of ai
 		for i, char := range a {
 			m[char] = pat[i]
 		}
 
+		// Translate b to digital numbers using patten
 		for i, char := range b {
 			g[i] = m[char]
 		}
 
+		// Leading number of translated one can not be zero
 		if g[0] == '0' {
 			continue
 		}
 		bi, _ = strconv.Atoi(string(g))
+
+		// If translated number is an square number, it can be answer
 		if InInts(Squares, bi) {
 			fmt.Println(string(a), string(b), ai, bi)
 			PE98Ret = append(PE98Ret, ai, bi)
