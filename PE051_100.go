@@ -2068,17 +2068,21 @@ func PE96(filename string) (ret int) {
 }
 
 type Suduku [9][9]byte
-type sudukuTryItem []byte
-type sudukuTry [9][9]sudukuTryItem
+
+// Bit Mapping [0 0 0 0 0 0 0 1 1 1 0 0 0 0 1 0] means {1 6 7 8} is possible.
+//                          -----------------
+//                            8 7 6         1
+// Sum(cur) = 0x3fe * 9, means solved.
+type sudukuTry [9][9]int16
 
 func SolveSuduko(game *Suduku) {
 	var cur sudukuTry
 	for i := 0; i < 9; i++ {
 		for j := 0; j < 9; j++ {
 			if game[i][j] == 0 {
-				cur[i][j] = append(cur[i][j], 1, 2, 3, 4, 5, 6, 7, 8, 9)
+				cur[i][j] = 0x3fe
 			} else {
-				cur[i][j] = append(cur[i][j], game[i][j])
+				cur[i][j] = 1 << game[i][j]
 			}
 		}
 	}

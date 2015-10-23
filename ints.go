@@ -5,7 +5,15 @@ import (
 	"strconv"
 )
 
-//////
+// The min/max value for integer type (which not in the math package).
+const (
+	MaxUint = ^uint(0)
+	MinUint = 0
+	MaxInt  = int(MaxUint >> 1)
+	MinInt  = -MaxInt - 1
+)
+
+// Return a^b where a,b are int64.
 func Power(a, b int64) int64 {
 	var i int64
 	var s int64 = 1
@@ -14,6 +22,8 @@ func Power(a, b int64) int64 {
 	}
 	return s
 }
+
+// Return a^b where a,b are int.
 func PowInt(a, b int) int {
 	var ret int = 1
 	for i := 0; i < b; i++ {
@@ -21,6 +31,8 @@ func PowInt(a, b int) int {
 	}
 	return ret
 }
+
+// Return A1^m+A2^m+..., for Ai in nlist.
 func PowSum(nlist []int, m int) int {
 	var sum int
 	for _, v := range nlist {
@@ -29,12 +41,13 @@ func PowSum(nlist []int, m int) int {
 	return sum
 }
 
+// Check if two slice of ints are totally equal.
 func EqualInts(a, b []int) bool {
 	if len(a) != len(b) {
 		return false
 	}
-	for i := 0; i < len(a); i++ {
-		if a[i] != b[i] {
+	for i, v := range a {
+		if v != b[i] {
 			return false
 		}
 	}
@@ -70,23 +83,15 @@ func InIntsUnsort(slice []int, v int) bool {
 	return false
 }
 
+// Sum of slice of ints
 func SumInts(list []int) (sum int) {
 	for _, v := range list {
 		sum += v
 	}
 	return
 }
-func IntsEquals(a, b []int) bool {
-	if len(a) != len(b) {
-		return false
-	}
-	for i, v := range a {
-		if v != b[i] {
-			return false
-		}
-	}
-	return true
-}
+
+// Get all digital numbers of a int.
 func MapNumInts(a int) (ret []int) {
 	for a > 0 {
 		ret = append(ret, a%10)
@@ -95,7 +100,7 @@ func MapNumInts(a int) (ret []int) {
 	return
 }
 
-//////
+// Check if (a,b,c) are right Triangle numbers
 func RightTri(a, b, c int) bool {
 	if a*a+b*b == c*c {
 		return true
@@ -159,7 +164,7 @@ func Gcd(m, n int) int {
 
 // Return Max int from []int
 func MaxInts(slice []int) int {
-	var ret int = 0
+	var ret int = MinInt
 	for _, v := range slice {
 		if ret < v {
 			ret = v
