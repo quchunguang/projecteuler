@@ -37,7 +37,7 @@ func IsPermutations(a, b int) bool {
 	mb := MapNumInts(b)
 	sort.Ints(ma)
 	sort.Ints(mb)
-	return IntsEquals(ma, mb)
+	return EqualInts(ma, mb)
 }
 
 // Callbacks

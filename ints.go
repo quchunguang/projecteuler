@@ -5,14 +5,6 @@ import (
 	"strconv"
 )
 
-// The min/max value for integer type (which not in the math package).
-const (
-	MaxUint = ^uint(0)
-	MinUint = 0
-	MaxInt  = int(MaxUint >> 1)
-	MinInt  = -MaxInt - 1
-)
-
 // Return a^b where a,b are int64.
 func Power(a, b int64) int64 {
 	var i int64
