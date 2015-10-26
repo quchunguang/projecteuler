@@ -40,7 +40,8 @@ Usage of projecteuler:
   -id int
         Problem Id. (default 1)
   -n int
-        N. Only the first one works in [-n|-f]. (default is the problem setting, depend on problem id given) (default -1)
+        N. Only the first one works in [-n|-f].
+        (default is the problem setting, depend on problem id given)
 
 IMPORT: Ensure there is a newline at the end of the file if the file is
  downloaded from projecteuler.org directly.
