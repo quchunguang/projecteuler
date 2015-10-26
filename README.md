@@ -43,6 +43,6 @@ Usage of projecteuler:
         N. Only the first one works in [-n|-f].
         (default is the problem setting, depend on problem id given)
 
-IMPORT: Ensure there is a newline at the end of the file if the file is
+NOTE: (TODO)Ensure there is a newline at the end of the file if the file is
  downloaded from projecteuler.org directly.
 ```

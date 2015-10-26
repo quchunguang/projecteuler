@@ -1,3 +1,4 @@
+// Command line tool for calling github.com/quchunguang/projecteuler solver.
 package main
 
 import (
@@ -10,18 +11,24 @@ import (
 	"strings"
 )
 
+// Id   option -id target the problem to run.
+// N    option -n given N (OPTIONEL).
+// File option -f file path to the datafile (OPTIONEL).
 type Options struct {
-	Id   int    // option -id target the problem to run.
-	N    int    // option -n given N (OPTIONEL).
-	File string // option -f file path to the datafile (OPTIONEL).
+	Id   int
+	N    int
+	File string
 }
 
+// Functions projecteuler.PExxx() will get one or no argument and could be
+// any type, return value MUST be int type and no more, holding the answer.
 type Solver struct {
 	Caller   interface{} // Function handle of solver.
 	Arg      interface{} // Default argument used by solver.
 	Finished bool        // If the problem had solved.
 }
 
+// List all solver function handler and default argument.
 var Solvers = []Solver{
 	{nil, nil, false}, // 0 - Hold place, No this problem!
 	{projecteuler.PE1, int(1e3), true},
@@ -126,6 +133,10 @@ var Solvers = []Solver{
 	{projecteuler.PE100, nil, false},
 }
 
+// Call a solver function given problem Id and argument.
+// If there is one argument, it could be any type.
+// If pass nil, means using default argument given in `Solvers` or the solver
+// function need no argument at all.
 func Call(Id int, arg interface{}) int {
 	if Solvers[Id].Arg != nil && arg == nil {
 		arg = Solvers[Id].Arg
@@ -160,6 +171,7 @@ func Call(Id int, arg interface{}) int {
 	return int(result[0].Int())
 }
 
+// Check if given pathname is exist and target to a regular file.
 func ExistPath(p string) bool {
 	finfo, err := os.Stat(p)
 	if err != nil {
@@ -195,7 +207,7 @@ func main() {
 		os.Exit(3)
 	}
 
-	// process argument
+	// process arguments
 	var arg interface{}
 	if opts.N != -1 {
 		arg = opts.N
@@ -214,7 +226,7 @@ func main() {
 		arg = nil
 	}
 
-	// call solver
+	// calling solver
 	answer := Call(opts.Id, arg)
 	fmt.Println(answer)
 }
