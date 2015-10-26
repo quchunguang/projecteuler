@@ -20,9 +20,9 @@ import (
 // If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.
 //
 // Find the sum of all the multiples of 3 or 5 below 1000.
-func PE1(N int64) int64 {
-	var i int64
-	var s int64 = 0
+func PE1(N int) int {
+	var i int
+	var s int = 0
 	for i = 3; i < N; i++ {
 		if i%3 == 0 || i%5 == 0 {
 			s += i
@@ -38,8 +38,8 @@ func PE1(N int64) int64 {
 // 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, ...
 //
 // By considering the terms in the Fibonacci sequence whose values do not exceed four million, find the sum of the even-valued terms.
-func PE2(N int64) int64 {
-	var a, b, s int64 = 1, 2, 0
+func PE2(N int) int {
+	var a, b, s int = 1, 2, 0
 	for b <= N {
 		if b%2 == 0 {
 			s += b
@@ -54,14 +54,13 @@ func PE2(N int64) int64 {
 // The prime factors of 13195 are 5, 7, 13 and 29.
 //
 // What is the largest prime factor of the number 600851475143 ?
-func PE3(N int64) int64 {
+func PE3(N int) int {
 	// fmt.Printf("%d = ", N)
-	var i int64
-	var primes []int64
+	var primes []int
 	primes = append(primes, 2)
 	reduceN(&N, 2)
 
-	for i = 3; i <= N; i += 2 {
+	for i := 3; i <= N; i += 2 {
 		for _, p := range primes {
 			if i%p == 0 {
 				goto Out
@@ -74,7 +73,7 @@ func PE3(N int64) int64 {
 	return primes[len(primes)-1]
 }
 
-func reduceN(N *int64, p int64) {
+func reduceN(N *int, p int) {
 	for (*N)%p == 0 {
 		(*N) /= p
 		// fmt.Printf("%d*", p)
@@ -86,13 +85,13 @@ func reduceN(N *int64, p int64) {
 // A palindromic number reads the same both ways. The largest palindrome made from the product of two 2-digit numbers is 9009 = 91 × 99.
 //
 // Find the largest palindrome made from the product of two 3-digit numbers.
-func PE4() int64 {
-	var a, b, N int64
-	var s int64 = 0
+func PE4() int {
+	var a, b, N int
+	var s int = 0
 	for a = 999; a >= 900; a-- {
 		for b = 999; b >= 900; b-- {
 			N = a * b
-			if Palindrome6(N) {
+			if Palindrome6(int64(N)) {
 				if N > s {
 					s = N
 				}
@@ -107,11 +106,11 @@ func PE4() int64 {
 // 2520 is the smallest number that can be divided by each of the numbers from 1 to 10 without any remainder.
 //
 // What is the smallest positive number that is evenly divisible by all of the numbers from 1 to 20?
-func PE5(N int64) int64 {
+func PE5(N int) int {
 	pruducts := make(map[int64]int64)
 	pruducts[2] = 1
 	var i, j, s, p int64
-	for i = 3; i <= N; i++ {
+	for i = 3; i <= int64(N); i++ {
 		s = i
 		for p = range pruducts {
 			for j = 0; s%p == 0; j++ {
@@ -130,7 +129,7 @@ func PE5(N int64) int64 {
 	for i = range pruducts {
 		s *= Power(i, pruducts[i])
 	}
-	return s
+	return int(s)
 }
 
 // Problem 6 - Sum square difference
@@ -144,16 +143,16 @@ func PE5(N int64) int64 {
 // Hence the difference between the sum of the squares of the first ten natural numbers and the square of the sum is 3025 − 385 = 2640.
 //
 // Find the difference between the sum of the squares of the first one hundred natural numbers and the square of the sum.
-func PE6(N int64) int64 {
-	var i, s1, s2 int64
+func PE6(N int) int {
+	var i, s1, s2 int
 	for i = 1; i <= N; i++ {
 		s1 += i
 		s2 += i * i
 	}
 	return s1*s1 - s2
 }
-func PE6b(N int64) int64 {
-	var i, j, s int64
+func PE6b(N int) int {
+	var i, j, s int
 	for i = 1; i <= N; i++ {
 		for j = 1; j <= N; j++ {
 			if i != j {
@@ -163,7 +162,7 @@ func PE6b(N int64) int64 {
 	}
 	return s
 }
-func PE6c(N int64) int64 {
+func PE6c(N int) int {
 	return N * (N + 1) * (3*N*N - N - 2) / 12
 }
 
@@ -172,10 +171,10 @@ func PE6c(N int64) int64 {
 // By listing the first six prime numbers: 2, 3, 5, 7, 11, and 13, we can see that the 6th prime is 13.
 //
 // What is the 10 001st prime number?
-func PE7(N int64) int64 {
-	var i int64 = 3
-	var count int64 = 1
-	var primes []int64
+func PE7(N int) int {
+	var i int = 3
+	var count int = 1
+	var primes []int
 	primes = append(primes, 2)
 	for i = 3; count < N; i++ {
 		for _, p := range primes {
@@ -280,14 +279,14 @@ func PE9(N int) int {
 // The sum of the primes below 10 is 2 + 3 + 5 + 7 = 17.
 //
 // Find the sum of all the primes below two million.
-func PE10() int64 {
-	var i, j, length, upbound, s int64
-	var primes [NMAX / 10]int64
+func PE10() int {
+	var i, j, length, upbound, s int
+	var primes [NMAX / 10]int
 	primes[0] = 2
 	primes[1] = 3
 	length = 2
 	for i = 5; i <= NMAX; i += 2 {
-		upbound = int64(math.Sqrt(float64(i)))
+		upbound = int(math.Sqrt(float64(i)))
 		for j = 0; primes[j] <= upbound; j++ {
 			// for j = 0; primes[j]*primes[j] <= i; j++ {
 			if i%primes[j] == 0 {
@@ -308,10 +307,10 @@ func PE10() int64 {
 const NMAX = 2e6
 
 ////// Sieve of Eratosthenes
-func PE10a() int64 {
-	var i, j, total, s int64
+func PE10a() int {
+	var i, j, total, s int
 	var flags [NMAX]bool
-	total = int64(math.Sqrt(NMAX)) // put outside, 22ms->14ms !!!
+	total = int(math.Sqrt(NMAX)) // put outside, 22ms->14ms !!!
 	for i = 2; i < total; i++ {
 		if flags[i] {
 			continue
@@ -343,7 +342,7 @@ func worker(total int64, coreid int64) {
 		}
 	}
 }
-func PE10b() int64 {
+func PE10b() int {
 	var i, total, s int64
 	var done = make(chan bool)
 
@@ -376,7 +375,7 @@ func PE10b() int64 {
 			s += i
 		}
 	}
-	return s
+	return int(s)
 }
 
 // Problem 11 - Largest product in a grid
@@ -495,7 +494,7 @@ func PE12(N int) int {
 // Problem 13 - Large sum
 //
 // Work out the first ten digits of the sum of the following one-hundred 50-digit numbers.
-func PE13(filename string) string {
+func PE13(filename string) int {
 	file, err := os.Open(filename)
 	if err != nil {
 		log.Fatal(err)
@@ -505,14 +504,17 @@ func PE13(filename string) string {
 	read := reader.ReadString
 	line, err := read('\n')
 	if err != nil {
-		return ""
+		fmt.Println(err)
+		return 0
 	}
 	a := BigNum(line)
 	for line, err = read('\n'); err == nil; line, err = read('\n') {
 		b := BigNum(line)
 		a = BigSum(a, b)
 	}
-	return strconv.FormatInt(a[0], 10)[0:10]
+	s := strconv.FormatInt(a[0], 10)[0:10]
+	ret, _ := strconv.ParseInt(s, 10, 64)
+	return int(ret)
 }
 
 // Problem 14 - Longest Collatz sequence
@@ -530,8 +532,8 @@ func PE13(filename string) string {
 // Which starting number, under one million, produces the longest chain?
 //
 // NOTE: Once the chain starts the terms are allowed to go above one million.
-func PE14(limit int64) int64 {
-	var i, maxlength, longest int64
+func PE14(limit int) int {
+	var i, maxlength, longest int
 	for i = limit; i >= 2; i-- {
 		length := genIterLen(i)
 		if maxlength < length {
@@ -541,8 +543,8 @@ func PE14(limit int64) int64 {
 	}
 	return longest
 }
-func genIterLen(n int64) int64 {
-	var length int64 = 1
+func genIterLen(n int) int {
+	var length int = 1
 	for ; n != 1; length++ {
 		if n%2 == 0 { //even
 			n = n / 2
@@ -567,9 +569,9 @@ func PE15(N int) int {
 // 2^15 = 32768 and the sum of its digits is 3 + 2 + 7 + 6 + 8 = 26.
 //
 // What is the sum of the digits of the number 2^1000?
-func PE16(N int) int64 {
+func PE16(N int) int {
 	bignum := BigPow(BigNum("2"), int64(N))
-	return BigDigSum(bignum)
+	return int(BigDigSum(bignum))
 }
 
 // Problem 17 - Number letter counts
@@ -681,7 +683,7 @@ func PE17(N int) (ret int) {
 			name += onename[m]
 			ret += onelen[m]
 		}
-		fmt.Println(name)
+		// fmt.Println(name)
 	}
 	return
 }
@@ -1722,12 +1724,13 @@ func PE47(n int) int {
 // The series, 1^1 + 2^2 + 3^3 + ... + 10^10 = 10405071317.
 //
 // Find the last ten digits of the series, 1^1 + 2^2 + 3^3 + ... + 1000^1000.
-func PE48(N int64) (ret int64) {
-	var n int64
+func PE48(N int) int {
+	var n int
+	var ret int64
 	for n = 1; n <= N; n++ {
-		ret += PowerTail(n, n)
+		ret += PowerTail(int64(n), int64(n))
 	}
-	return ret % base
+	return int(ret % base)
 }
 
 const base = 1e10
@@ -1756,7 +1759,8 @@ func PowerTail(a int64, b int64) (ret int64) {
 // There are no arithmetic sequences made up of three 1-, 2-, or 3-digit primes, exhibiting this property, but there is one other 4-digit increasing sequence.
 //
 // What 12-digit number do you form by concatenating the three terms in this sequence?
-func PE49() (ret []string) {
+func PE49() int {
+	var ret []string
 	GenPrimes(10000)
 	for i := 1001; i < 10000; i += 2 {
 		j := i + 3330
@@ -1768,7 +1772,13 @@ func PE49() (ret []string) {
 			ret = append(ret, strconv.Itoa(i)+strconv.Itoa(j)+strconv.Itoa(k))
 		}
 	}
-	return
+	for _, s := range ret {
+		if s != "148748178147" {
+			i, _ := strconv.ParseInt(s, 10, 64)
+			return int(i)
+		}
+	}
+	return 0
 }
 
 // Problem 50 - Consecutive prime sum

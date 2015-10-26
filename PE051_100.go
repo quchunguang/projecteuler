@@ -939,10 +939,9 @@ func PE63() (ret int) {
 // Exactly four continued fractions, for N ≤ 13, have an odd period.
 //
 // How many continued fractions for N ≤ 10000 have an odd period?
-func PE64(N int64) (ret int) {
-	var n int64
-	for n = 2; n <= N; n++ {
-		_, period := ContinueFraction(n)
+func PE64(N int) (ret int) {
+	for n := 2; n <= N; n++ {
+		_, period := ContinueFraction(int64(n))
 		if len(period)%2 != 0 {
 			ret++
 		}
@@ -1040,27 +1039,27 @@ func ContinueFractionSimplify(first int64, adder []int64) *big.Rat {
 //
 // Hence, by considering minimal solutions in x for D ≤ 7, the largest x is obtained when D=5.
 // Find the value of D ≤ 1000 in minimal solutions of x for which the largest value of x is obtained.
-func PE66(D int64) (ret int64) {
+// N == D
+func PE66(N int) (ret int) {
 	var i, d int64
 	xmax := big.NewInt(0)
 
-	for i, d = 2, 2; d <= D; d++ {
-		// Pell equation has no natural number solution where D>0 is a square number.
+	for i, d = 2, 2; d <= int64(N); d++ {
+		// Pell equation has no natural number solution where N>0 is a square number.
 		if d == i*i {
 			i++
 			continue
 		}
 
-		x, y := SolveDiophantine(d)
-		// x, y := SolveDiophantine1(d)
-		// x,y := SolveDiophantine2(61))
-		// x, y := SolveDiophantine3(int64(d))
+		x, _ := SolveDiophantine(d)
+		// x, _ := SolveDiophantine1(d)
+		// x, _ := SolveDiophantine2(61))
+		// x, _ := SolveDiophantine3(int64(d))
 
 		if x.Cmp(xmax) == 1 {
 			xmax = x
-			ret = d
+			ret = int(d)
 		}
-		fmt.Println(d, x, y)
 	}
 
 	return
@@ -1328,14 +1327,14 @@ func callbackPE68(ret string) {
 // It can be seen that n=6 produces a maximum n/φ(n) for n ≤ 10.
 // Find the value of n ≤ 1,000,000 for which n/φ(n) is a maximum.
 // It will run about 70s.
-func PE69(N int64) (ret int64) {
+func PE69(N int) (ret int) {
 	var ratephi, max float64
 	var n int64
-	for n = 2; n < N; n++ {
+	for n = 2; n < int64(N); n++ {
 		ratephi = float64(n) / float64(EulerPhi(n))
 		if ratephi > max {
 			max = ratephi
-			ret = n
+			ret = int(n)
 		}
 	}
 	return
@@ -1348,10 +1347,10 @@ func PE69(N int64) (ret int64) {
 // Interestingly, φ(87109)=79180, and it can be seen that 87109 is a permutation of 79180.
 // Find the value of n, 1 < n < 107, for which φ(n) is a permutation of n and the ratio n/φ(n) produces a minimum.
 // This program will cost 79m33.594s, and result will get at 83%.
-func PE70(N int64) (ret int64) {
+func PE70(N int) (ret int) {
 	var ratephi, min float64 = 0, 1e10
 	var n int64
-	for n = 2; n < N; n++ {
+	for n = 2; n < int64(N); n++ {
 		// Process bar
 		if n%100000 == 0 {
 			fmt.Print(EL, n/100000, "%")
@@ -1361,7 +1360,7 @@ func PE70(N int64) (ret int64) {
 			ratephi = float64(n) / float64(phi)
 			if ratephi < min {
 				min = ratephi
-				ret = n
+				ret = int(n)
 				fmt.Println(EL, n, phi, ratephi)
 			}
 		}
@@ -1379,11 +1378,11 @@ func PE70(N int64) (ret int64) {
 //
 // It can be seen that 2/5 is the fraction immediately to the left of 3/7.
 // By listing the set of reduced proper fractions for d ≤ 1,000,000 in ascending order of size, find the numerator of the fraction immediately to the left of 3/7.
-func PE71(D int64) (ret int64) {
+func PE71(N int) (ret int) {
 	var max, nd float64
 	s37 := big.NewRat(3, 7)
 	r := float64(3) / float64(7)
-	for d := D; d > 1; d-- {
+	for d := N; d > 1; d-- {
 		n := int(float64(d) * r)
 		s := big.NewRat(int64(n), int64(d))
 		if s.Cmp(s37) == 0 {
@@ -1393,7 +1392,7 @@ func PE71(D int64) (ret int64) {
 		nd = float64(n) / float64(d)
 		if nd > max {
 			max = nd
-			ret = s.Num().Int64()
+			ret = int(s.Num().Int64())
 			// fmt.Println(s)
 		}
 	}
@@ -1409,9 +1408,10 @@ func PE71(D int64) (ret int64) {
 //
 // It can be seen that there are 21 elements in this set.
 // How many elements would be contained in the set of reduced proper fractions for d ≤ 1,000,000?
-func PE72(D int64) (ret int64) {
+func PE72(N int) int {
+	var ret int64
 	var d int64
-	for d = 2; d <= D; d++ {
+	for d = 2; d <= int64(N); d++ {
 		// Process bar
 		if d%10000 == 0 {
 			fmt.Print(EL, d/10000, "%")
@@ -1420,7 +1420,7 @@ func PE72(D int64) (ret int64) {
 		ret += EulerPhi(d)
 	}
 	fmt.Print(EL)
-	return
+	return int(ret)
 }
 
 // Problem 73 - Counting fractions in a range
@@ -1432,12 +1432,13 @@ func PE72(D int64) (ret int64) {
 //
 // It can be seen that there are 3 fractions between 1/3 and 1/2.
 // How many fractions lie between 1/3 and 1/2 in the sorted set of reduced proper fractions for d ≤ 12,000?
-// slow: about 5 minutes
-func PE73(D int64) (ret int64) {
+// Run time about 5 minutes
+func PE73(N int) int {
+	var ret int64
 	v13 := big.NewRat(1, 3)
 	v12 := big.NewRat(1, 2)
 	var d, n int64
-	for d = 2; d <= D; d++ {
+	for d = 2; d <= int64(N); d++ {
 		if d%1000 == 0 {
 			fmt.Print(EL, "d = ", d)
 		}
@@ -1449,7 +1450,7 @@ func PE73(D int64) (ret int64) {
 		}
 	}
 	fmt.Print(EL)
-	return
+	return int(ret)
 }
 
 // Problem 74 - Digit factorial chains
@@ -1672,7 +1673,7 @@ func planPrime(maxindex int, remain int, preset []int) {
 //   O   O   O   O   O
 // Find the least value of n for which p(n) is divisible by one million.
 // Cost about 32 seconds when N = 100000
-func PE78(L uint64) (ret int) {
+func PE78(L int) (ret int) {
 	const N int = 100000 // Add if find no answer
 	Pn := make([]uint64, N+1, N+1)
 
@@ -1697,7 +1698,7 @@ func PE78(L uint64) (ret int) {
 		}
 		// Found!!!
 		// P[n][n] plus one  means include case that n itself as one plan.
-		if (Pn[n]+1)%L == 0 {
+		if (Pn[n]+1)%uint64(L) == 0 {
 			ret = n
 			fmt.Print(EL)
 			return
@@ -2125,7 +2126,7 @@ func ReadAllSudoku(filename string) (ret []*Suduku) {
 // However, in 2004 there was found a massive non-Mersenne prime which contains 2,357,207 digits: 28433×27830457+1.
 //
 // Find the last ten digits of this prime number.
-func PE97() (ret int64) {
+func PE97() (ret int) {
 	// ret = 2^7830457
 	ret = 1
 	for i := 0; i < 7830457; i++ {
