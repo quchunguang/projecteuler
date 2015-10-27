@@ -11,7 +11,9 @@ import (
 	"strings"
 )
 
-// Id   option -id target the problem to run.
+const maxId = 521
+
+// Id   option -id target the project to run.
 // N    option -n given N (OPTIONEL).
 // File option -f file path to the datafile (OPTIONEL).
 type Options struct {
@@ -25,8 +27,8 @@ type Options struct {
 type Solver struct {
 	Caller   interface{} // Function handle of solver.
 	Arg      interface{} // Default argument used by solver.
-	Finished bool        // If the problem had solved.
-	Commet   string      // Issues or todo information.
+	Finished bool        // If the project had solved.
+	Comment  string      // Issues or todo information.
 }
 
 // List all solver function handler and default argument.
@@ -135,7 +137,40 @@ var Solvers = []Solver{
 	{projecteuler.PE100, nil, false, ""},
 }
 
-// Call a solver function given problem Id and argument.
+// Print the default command line with given project Id.
+func PrintInfo(Id int) {
+	fmt.Println("Project Id:\t\t", Id)
+
+	if Solvers[Id].Arg == nil {
+		fmt.Println("Calling Command:\t", "projecteuler -id", Id)
+	} else if value, ok := Solvers[Id].Arg.(string); ok {
+		value = path.Join(os.Getenv("GOPATH"), "src",
+			"github.com/quchunguang/projecteuler/projecteuler", value)
+		fmt.Println("Calling Command:\t", "projecteuler -id", Id, "-f", value)
+	} else if value, ok := Solvers[Id].Arg.(int); ok {
+		fmt.Println("Calling Command:\t", "projecteuler -id", Id, "-n", value)
+	} else {
+		fmt.Println("[ERROR] BUG, Not supported argument type.")
+		os.Exit(5)
+	}
+
+	fmt.Println("Comments:\t\t", Solvers[Id].Comment)
+	fmt.Println("Solved:\t\t\t", Solvers[Id].Finished)
+
+	fmt.Println("\nTotal Projects:\t\t", maxId)
+
+	totalSolved := 0
+	for _, i := range Solvers {
+		if i.Finished {
+			totalSolved++
+		}
+	}
+	fmt.Println("Total Solved:\t\t", totalSolved)
+	fmt.Printf("Finished (%%):\t\t %4.1f\n",
+		float32(totalSolved)/float32(maxId)*100.0)
+}
+
+// Call a solver function given project Id and argument.
 // If there is one argument, it could be any type.
 // If pass nil, means using default argument given in `Solvers` or the solver
 // function need no argument at all.
@@ -190,23 +225,29 @@ func ExistPath(p string) bool {
 func main() {
 	// parse command line arguments
 	var opts Options
-	flag.IntVar(&opts.Id, "id", 1, "Problem Id.")
-	flag.IntVar(&opts.N, "n", -1, "N. Only the first one works in [-n|-f]. (default is the problem setting, depend on problem id given)")
+	flag.IntVar(&opts.Id, "id", 1, "Project Id.")
+	flag.IntVar(&opts.N, "n", -1, "N. Only the first one works in [-n|-f]. (default is the project setting, depend on project id given)")
 	flag.StringVar(&opts.File, "f", "", "Additional data file. Only the first one works in [-n|-f]. (default target to the data file come with source)")
-	h := flag.Bool("h", false, "Usage information. IMPORT: Ensure there is a newline at the end of the file if the file is downloaded from projecteuler.org directly.")
+	help := flag.Bool("h", false, "Usage information. IMPORT: Ensure there is a newline at the end of the file if the file is downloaded from projecteuler.org directly.")
+	about := flag.Bool("about", false, "Print the default command line with given project Id.")
 	flag.Parse()
 
 	// process arguments -h
-	if *h {
+	if *help {
 		flag.Usage()
 		return
 	}
 
-	// check problem id
-	if opts.Id < 1 || opts.Id > len(Solvers) || !Solvers[opts.Id].Finished {
-		fmt.Println("[ERROR] No such problem or not solved yet!")
-		flag.Usage()
+	// check project id
+	if opts.Id < 1 || opts.Id >= len(Solvers) || !Solvers[opts.Id].Finished {
+		fmt.Println("[ERROR] No such project Id or net solved yet!")
 		os.Exit(3)
+	}
+
+	// process argument -about
+	if *about {
+		PrintInfo(opts.Id)
+		return
 	}
 
 	// process arguments -n -f
