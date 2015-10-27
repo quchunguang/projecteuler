@@ -26,111 +26,113 @@ type Solver struct {
 	Caller   interface{} // Function handle of solver.
 	Arg      interface{} // Default argument used by solver.
 	Finished bool        // If the problem had solved.
+	Commet   string      // Issues or todo information.
 }
 
 // List all solver function handler and default argument.
 var Solvers = []Solver{
-	{nil, nil, false}, // 0 - Hold place, No this problem!
-	{projecteuler.PE1, int(1e3), true},
-	{projecteuler.PE2, int(4e6), true},
-	{projecteuler.PE3, int(600851475143), true},
-	{projecteuler.PE4, nil, true},
-	{projecteuler.PE5, int(20), true},
-	{projecteuler.PE6c, int(100), true},
-	{projecteuler.PE7, int(10001), true},
-	{projecteuler.PE8, int(13), true},
-	{projecteuler.PE9, int(1000), true},
-	{projecteuler.PE10b, nil, true},
-	{projecteuler.PE11, nil, true},
-	{projecteuler.PE12, int(500), true},
-	{projecteuler.PE13, "p013_bignumbers.txt", true},
-	{projecteuler.PE14, int(1e6), true},
-	{projecteuler.PE15, int(20), true},
-	{projecteuler.PE16, int(1000), true},
-	{projecteuler.PE17, int(1000), true},
-	{projecteuler.PE18, "p018_path.txt", true},
-	{projecteuler.PE19b, nil, true},
-	{projecteuler.PE20, int(100), true},
-	{projecteuler.PE21, int(1e4), true},
-	{projecteuler.PE22, "p022_names.txt", true},
-	{projecteuler.PE23, nil, true},
-	{projecteuler.PE24, int(1e6), true},
-	{projecteuler.PE25, int(1000), true},
-	{projecteuler.PE26, int(1000), true},
-	{projecteuler.PE27, nil, true},
-	{projecteuler.PE28, int(1001), true},
-	{projecteuler.PE29, int(100), true},
-	{projecteuler.PE30, int(5), true},
-	{projecteuler.PE31, int(200), true},
-	{projecteuler.PE32, nil, true},
-	{projecteuler.PE33, nil, true},
-	{projecteuler.PE34, nil, true}, // TODO: this function will never stop
-	{projecteuler.PE35, int(1e6), true},
-	{projecteuler.PE36, int(1e6), true},
-	{projecteuler.PE37, nil, true},
-	{projecteuler.PE38, nil, true},
-	{projecteuler.PE39, int(1000), true},
-	{projecteuler.PE40, int(1e6), true},
-	{projecteuler.PE41, nil, true}, // TODO: this function will never stop
-	{projecteuler.PE42, "p042_words.txt", true},
-	{projecteuler.PE43, nil, true},
-	{projecteuler.PE44, nil, true},
-	{projecteuler.PE45, nil, true}, // TODO: this function will never stop
-	{projecteuler.PE46, nil, true},
-	{projecteuler.PE47, int(4), true},
-	{projecteuler.PE48, int(1000), true},
-	{projecteuler.PE49, nil, true},
-	{projecteuler.PE50, int(1e6), true},
-	{projecteuler.PE51, nil, true},
-	{projecteuler.PE52, nil, true},
-	{projecteuler.PE53, int(1e6), true},
-	{projecteuler.PE54, "p054_poker.txt", true},
-	{projecteuler.PE55, int(1e4), true},
-	{projecteuler.PE56, int(100), true},
-	{projecteuler.PE57, int(1000), true},
-	{projecteuler.PE58, nil, true}, // TODO: Run time about 1 hour
-	{projecteuler.PE59, "p059_cipher.txt", true},
-	{projecteuler.PE60, nil, true}, // TODO: this function will never stop
-	{projecteuler.PE61, nil, true}, // TODO: Only print out answer
-	{projecteuler.PE62, nil, true},
-	{projecteuler.PE63, nil, true},
-	{projecteuler.PE64, int(10000), true},
-	{projecteuler.PE65, nil, true},
-	{projecteuler.PE66, int(1000), true},
-	{projecteuler.PE67, "p067_triangle.txt", true},
-	{projecteuler.PE68, nil, true}, // TODO: Only print out answer
-	{projecteuler.PE69, int(1e6), true},
-	{projecteuler.PE70, int(1e7), true}, // TODO: Run time about 1 hour at 83%.
-	{projecteuler.PE71, int(1e6), true},
-	{projecteuler.PE72, int(1e6), true},
-	{projecteuler.PE73, int(12000), true}, // TODO: Run time about 5 minutes
-	{projecteuler.PE74, int(1e6), true},
-	{projecteuler.PE75, int(1500000), true},
-	{projecteuler.PE76, int(100), true},
-	{projecteuler.PE77, int(5000), true},
-	{projecteuler.PE78, int(1e6), true},
-	{projecteuler.PE79, "p079_keylog.txt", false},
-	{projecteuler.PE80, nil, false},
-	{projecteuler.PE81, "p081_matrix.txt", true},
-	{projecteuler.PE82, "p082_matrix.txt", true},
-	{projecteuler.PE83, "p083_matrix.txt", false},
-	{projecteuler.PE84, nil, false},
-	{projecteuler.PE85, int(2e6), true},
-	{projecteuler.PE86, int(1e2), false},
-	{projecteuler.PE87, nil, false},
-	{projecteuler.PE88, nil, false},
-	{projecteuler.PE89, nil, false},
-	{projecteuler.PE90, nil, false},
-	{projecteuler.PE91, nil, false},
-	{projecteuler.PE92, nil, false},
-	{projecteuler.PE93, nil, false},
-	{projecteuler.PE94, nil, false},
-	{projecteuler.PE95, nil, false},
-	{projecteuler.PE96, "p096_sudoku.txt", false},
-	{projecteuler.PE97, nil, true},
-	{projecteuler.PE98, "p098_words.txt", true},
-	{projecteuler.PE99, "p099_base_exp.txt", true},
-	{projecteuler.PE100, nil, false},
+	// 0 - Hold place, Useless!
+	{nil, nil, false, ""},
+	{projecteuler.PE1, int(1e3), true, ""},
+	{projecteuler.PE2, int(4e6), true, ""},
+	{projecteuler.PE3, int(600851475143), true, ""},
+	{projecteuler.PE4, nil, true, ""},
+	{projecteuler.PE5, int(20), true, ""},
+	{projecteuler.PE6, int(100), true, ""},
+	{projecteuler.PE7, int(10001), true, ""},
+	{projecteuler.PE8, int(13), true, ""},
+	{projecteuler.PE9, int(1000), true, ""},
+	{projecteuler.PE10, nil, true, ""},
+	{projecteuler.PE11, nil, true, ""},
+	{projecteuler.PE12, int(500), true, ""},
+	{projecteuler.PE13, "p013_bignumbers.txt", true, ""},
+	{projecteuler.PE14, int(1e6), true, ""},
+	{projecteuler.PE15, int(20), true, ""},
+	{projecteuler.PE16, int(1000), true, ""},
+	{projecteuler.PE17, int(1000), true, ""},
+	{projecteuler.PE18, "p018_path.txt", true, ""},
+	{projecteuler.PE19, nil, true, ""},
+	{projecteuler.PE20, int(100), true, ""},
+	{projecteuler.PE21, int(1e4), true, ""},
+	{projecteuler.PE22, "p022_names.txt", true, ""},
+	{projecteuler.PE23, nil, true, ""},
+	{projecteuler.PE24, int(1e6), true, ""},
+	{projecteuler.PE25, int(1000), true, ""},
+	{projecteuler.PE26, int(1000), true, ""},
+	{projecteuler.PE27, nil, true, ""},
+	{projecteuler.PE28, int(1001), true, ""},
+	{projecteuler.PE29, int(100), true, ""},
+	{projecteuler.PE30, int(5), true, ""},
+	{projecteuler.PE31, int(200), true, ""},
+	{projecteuler.PE32, nil, true, ""},
+	{projecteuler.PE33, nil, true, ""},
+	{projecteuler.PE34, nil, true, "this function will never stop"},
+	{projecteuler.PE35, int(1e6), true, ""},
+	{projecteuler.PE36, int(1e6), true, ""},
+	{projecteuler.PE37, nil, true, ""},
+	{projecteuler.PE38, nil, true, ""},
+	{projecteuler.PE39, int(1000), true, ""},
+	{projecteuler.PE40, int(1e6), true, ""},
+	{projecteuler.PE41, nil, true, "this function will never stop"},
+	{projecteuler.PE42, "p042_words.txt", true, ""},
+	{projecteuler.PE43, nil, true, ""},
+	{projecteuler.PE44, nil, true, ""},
+	{projecteuler.PE45, nil, true, "this function will never stop"},
+	{projecteuler.PE46, nil, true, ""},
+	{projecteuler.PE47, int(4), true, ""},
+	{projecteuler.PE48, int(1000), true, ""},
+	{projecteuler.PE49, nil, true, ""},
+	{projecteuler.PE50, int(1e6), true, ""},
+	{projecteuler.PE51, nil, true, ""},
+	{projecteuler.PE52, nil, true, ""},
+	{projecteuler.PE53, int(1e6), true, ""},
+	{projecteuler.PE54, "p054_poker.txt", true, ""},
+	{projecteuler.PE55, int(1e4), true, ""},
+	{projecteuler.PE56, int(100), true, ""},
+	{projecteuler.PE57, int(1000), true, ""},
+	{projecteuler.PE58, nil, true, "Run time about 1 hour"},
+	{projecteuler.PE59, "p059_cipher.txt", true, ""},
+	{projecteuler.PE60, nil, true, "this function will never stop"},
+	{projecteuler.PE61, nil, true, "Only print out answer"},
+	{projecteuler.PE62, nil, true, ""},
+	{projecteuler.PE63, nil, true, ""},
+	{projecteuler.PE64, int(10000), true, ""},
+	{projecteuler.PE65, nil, true, ""},
+	{projecteuler.PE66, int(1000), true, ""},
+	{projecteuler.PE67, "p067_triangle.txt", true, ""},
+	{projecteuler.PE68, nil, true, "Only print out answer"},
+	{projecteuler.PE69, int(1e6), true, ""},
+	{projecteuler.PE70, int(1e7), true, "Run time about 1 hour at 83%"},
+	{projecteuler.PE71, int(1e6), true, ""},
+	{projecteuler.PE72, int(1e6), true, ""},
+	{projecteuler.PE73, int(12000), true, "Run time about 5 minutes"},
+	{projecteuler.PE74, int(1e6), true, ""},
+	{projecteuler.PE75, int(1500000), true, ""},
+	{projecteuler.PE76, int(100), true, ""},
+	{projecteuler.PE77, int(5000), true, ""},
+	{projecteuler.PE78, int(1e6), true, ""},
+	{projecteuler.PE79, "p079_keylog.txt", false, ""},
+	{projecteuler.PE80, nil, false, ""},
+	{projecteuler.PE81, "p081_matrix.txt", true, ""},
+	{projecteuler.PE82, "p082_matrix.txt", true, ""},
+	{projecteuler.PE83, "p083_matrix.txt", false, ""},
+	{projecteuler.PE84, nil, false, ""},
+	{projecteuler.PE85, int(2e6), true, ""},
+	{projecteuler.PE86, int(1e2), false, ""},
+	{projecteuler.PE87, nil, false, ""},
+	{projecteuler.PE88, nil, false, ""},
+	{projecteuler.PE89, nil, false, ""},
+	{projecteuler.PE90, nil, false, ""},
+	{projecteuler.PE91, nil, false, ""},
+	{projecteuler.PE92, nil, false, ""},
+	{projecteuler.PE93, nil, false, ""},
+	{projecteuler.PE94, nil, false, ""},
+	{projecteuler.PE95, nil, false, ""},
+	{projecteuler.PE96, "p096_sudoku.txt", false, ""},
+	{projecteuler.PE97, nil, true, ""},
+	{projecteuler.PE98, "p098_words.txt", true, ""},
+	{projecteuler.PE99, "p099_base_exp.txt", true, ""},
+	{projecteuler.PE100, nil, false, ""},
 }
 
 // Call a solver function given problem Id and argument.
@@ -156,7 +158,7 @@ func Call(Id int, arg interface{}) int {
 	f := reflect.ValueOf(Solvers[Id].Caller)
 	nArg := f.Type().NumIn()
 	if nArg == 0 && arg != nil || nArg == 1 && arg == nil || nArg > 1 {
-		fmt.Println("[ERROR] The number of params is not adapted.")
+		fmt.Println("[ERROR] The number of parameters is not adapted.")
 		flag.Usage()
 		os.Exit(2)
 	}
@@ -192,9 +194,9 @@ func main() {
 	flag.IntVar(&opts.N, "n", -1, "N. Only the first one works in [-n|-f]. (default is the problem setting, depend on problem id given)")
 	flag.StringVar(&opts.File, "f", "", "Additional data file. Only the first one works in [-n|-f]. (default target to the data file come with source)")
 	h := flag.Bool("h", false, "Usage information. IMPORT: Ensure there is a newline at the end of the file if the file is downloaded from projecteuler.org directly.")
-
 	flag.Parse()
 
+	// process arguments -h
 	if *h {
 		flag.Usage()
 		return
@@ -207,7 +209,7 @@ func main() {
 		os.Exit(3)
 	}
 
-	// process arguments
+	// process arguments -n -f
 	var arg interface{}
 	if opts.N != -1 {
 		arg = opts.N

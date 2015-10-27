@@ -143,7 +143,7 @@ func PE5(N int) int {
 // Hence the difference between the sum of the squares of the first ten natural numbers and the square of the sum is 3025 − 385 = 2640.
 //
 // Find the difference between the sum of the squares of the first one hundred natural numbers and the square of the sum.
-func PE6(N int) int {
+func PE6a(N int) int {
 	var i, s1, s2 int
 	for i = 1; i <= N; i++ {
 		s1 += i
@@ -162,7 +162,7 @@ func PE6b(N int) int {
 	}
 	return s
 }
-func PE6c(N int) int {
+func PE6(N int) int {
 	return N * (N + 1) * (3*N*N - N - 2) / 12
 }
 
@@ -279,7 +279,7 @@ func PE9(N int) int {
 // The sum of the primes below 10 is 2 + 3 + 5 + 7 = 17.
 //
 // Find the sum of all the primes below two million.
-func PE10() int {
+func PE10a() int {
 	var i, j, length, upbound, s int
 	var primes [NMAX / 10]int
 	primes[0] = 2
@@ -307,7 +307,7 @@ func PE10() int {
 const NMAX = 2e6
 
 ////// Sieve of Eratosthenes
-func PE10a() int {
+func PE10b() int {
 	var i, j, total, s int
 	var flags [NMAX]bool
 	total = int(math.Sqrt(NMAX)) // put outside, 22ms->14ms !!!
@@ -342,7 +342,7 @@ func worker(total int64, coreid int64) {
 		}
 	}
 }
-func PE10b() int {
+func PE10() int {
 	var i, total, s int64
 	var done = make(chan bool)
 
@@ -752,7 +752,7 @@ func findPathMax(data [][]int, i, j int) (ret int) {
 //     A leap year occurs on any year evenly divisible by 4, but not on a century unless it is divisible by 400.
 //
 // How many Sundays fell on the first of the month during the twentieth century (1 Jan 1901 to 31 Dec 2000)?
-func PE19() (ret int) {
+func PE19a() (ret int) {
 	l, _ := time.LoadLocation("Asia/Shanghai")
 	for y := 1901; y <= 2000; y++ {
 		for m := 1; m <= 12; m++ {
@@ -765,7 +765,7 @@ func PE19() (ret int) {
 	}
 	return
 }
-func PE19b() (ret int) {
+func PE19() (ret int) {
 	week := 1 // 1900.1.1 is Monday
 	for y := 1900; y <= 2000; y++ {
 		for m := 1; m <= 12; m++ {
