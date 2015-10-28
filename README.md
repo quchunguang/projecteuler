@@ -1,7 +1,7 @@
 projecteuler
 ============
 
-Solve problems from [Project Euler](http://projecteuler.net) with golang.
+Solve projects from [Project Euler](http://projecteuler.net) with golang.
 Just for helping sleep.
 
 Install
@@ -15,21 +15,15 @@ go install github.com/quchunguang/projecteuler/projecteuler
 Run
 ---
 
-Run the solver (problem 10 for example),
+Run the solver (project id=10 for example), `projecteuler -id 10`
 
-```sh
-projecteuler -id 10
-```
+Get information of the solver (project id=10 for example), `projecteuler -id 10 -about`
 
-For the problem description, (problem 10 for example), run
+For the project description, (project id=10 for example), `godoc github.com/quchunguang/projecteuler PE10`
 
-```sh
-godoc github.com/quchunguang/projecteuler PE10
-```
+You may also direct access official version at [Problem 10](https://projecteuler.net/project=10).
 
-You may also direct access official version at [Problem 10](https://projecteuler.net/problem=10).
-
-Get command line details by ` projecteuler -h `.
+Get details of `projecteuler` by `projecteuler -h`.
 
 ```
 Usage of projecteuler:
@@ -41,7 +35,7 @@ Usage of projecteuler:
         Problem Id. (default 1)
   -n int
         N. Only the first one works in [-n|-f].
-        (default is the problem setting, depend on problem id given)
+        (default is the project setting, depend on project id given)
 
 NOTE: (TODO)Ensure there is a newline at the end of the file if the file is
  downloaded from projecteuler.org directly.
