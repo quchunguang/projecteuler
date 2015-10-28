@@ -6,12 +6,16 @@ import (
 	"fmt"
 	"github.com/quchunguang/projecteuler"
 	"os"
-	"path"
+	"path/filepath"
 	"reflect"
+	"strconv"
 	"strings"
 )
 
 const maxid = 521
+const pkgPath = "github.com/quchunguang/projecteuler"
+const cmdPath = pkgPath + "/projecteuler"
+const godocName = "go doc"
 
 type options struct {
 	id    int
@@ -25,12 +29,21 @@ type options struct {
 func PrintInfo(id int) {
 	fmt.Println("Project id:\t\t", id)
 
+	fName := "PE" + strconv.Itoa(id)
+	fmt.Println("Project description:\t", godocName, pkgPath, fName)
+
+	// Entry function of solver
+	callType := reflect.ValueOf(projecteuler.Solvers[id].Caller).
+		Type().String()
+	strf := strings.Replace(callType, "func", "PE"+strconv.Itoa(id), 1)
+	fmt.Println("Solver function:\t", strf)
+
+	// Demo command line with default arguments
 	if projecteuler.Solvers[id].Arg == nil {
 		fmt.Println("Calling Command:\t", "projecteuler -id", id)
 	} else if value, ok := projecteuler.Solvers[id].Arg.(string); ok {
-		value = path.Join(os.Getenv("GOPATH"), "src",
-			"github.com/quchunguang/projecteuler/projecteuler", value)
-		fmt.Println("Calling Command:\t", "projecteuler -id", id, "-f", value)
+		value = filepath.Join(os.Getenv("GOPATH"), "src", cmdPath, value)
+		fmt.Println("Calling Command:\t", "projecteuler -id", id, "-file", value)
 	} else if value, ok := projecteuler.Solvers[id].Arg.(int); ok {
 		fmt.Println("Calling Command:\t", "projecteuler -id", id, "-n", value)
 	} else {
@@ -41,8 +54,8 @@ func PrintInfo(id int) {
 	fmt.Println("Comments:\t\t", projecteuler.Solvers[id].Comment)
 	fmt.Println("Solved:\t\t\t", projecteuler.Solvers[id].Finished)
 
+	// Total collections
 	fmt.Println("\nTotal Projects:\t\t", maxid)
-
 	totalSolved := 0
 	for _, i := range projecteuler.Solvers {
 		if i.Finished {
@@ -64,7 +77,7 @@ func Call(id int, arg interface{}) int {
 		if value, ok := arg.(string); ok {
 			// check if the argument is a file
 			if strings.HasSuffix(value, ".txt") {
-				p := path.Join(os.Getenv("GOPATH"), "src", "github.com/quchunguang/projecteuler/projecteuler", value)
+				p := filepath.Join(os.Getenv("GOPATH"), "src", cmdPath, value)
 				if !ExistPath(p) {
 					fmt.Println("[ERROR] Parameter not a valid path.")
 					flag.Usage()
@@ -96,11 +109,11 @@ func Call(id int, arg interface{}) int {
 func ExistPath(p string) bool {
 	finfo, err := os.Stat(p)
 	if err != nil {
-		fmt.Println("[ERROR] -f: No such file!")
+		fmt.Println("[ERROR] -file: No such file!")
 		return false
 	}
 	if finfo.IsDir() {
-		fmt.Println("[ERROR] -f: Not a file!")
+		fmt.Println("[ERROR] -file: Not a file!")
 		return false
 	}
 	return true
@@ -111,9 +124,9 @@ func main() {
 
 	flag.IntVar(&opts.id, "id", 1, "Project id.")
 
-	flag.IntVar(&opts.n, "n", -1, "N. Only the first one works in [-n|-f]. (default is the project setting, depend on project id given)")
+	flag.IntVar(&opts.n, "n", -1, "N. Only the first one works in [-n|-file]. (default is the project setting, depend on project id given)")
 
-	flag.StringVar(&opts.file, "file", "", "Additional data file. Only the first one works in [-n|-f]. (default target to the data file come with source)")
+	flag.StringVar(&opts.file, "file", "", "Additional data file. Only the first one works in [-n|-file]. (default target to the data file come with source)")
 
 	flag.BoolVar(&opts.help, "h", false, "Usage information. IMPORT: Ensure there is a newline at the end of the file if the file is downloaded from projecteuler.org directly.")
 
@@ -147,9 +160,9 @@ func main() {
 		arg = opts.n
 	} else if opts.file != "" {
 		p := opts.file
-		if !path.IsAbs(p) {
+		if !filepath.IsAbs(p) {
 			abs, _ := os.Getwd()
-			p = path.Join(abs, p)
+			p = filepath.Join(abs, p)
 		}
 		if !ExistPath(p) {
 			flag.Usage()
