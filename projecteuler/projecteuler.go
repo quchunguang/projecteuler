@@ -121,18 +121,18 @@ func ExistPath(p string) bool {
 
 func main() {
 	var opts options
-
-	flag.IntVar(&opts.id, "id", 1, "Project id.")
-
-	flag.IntVar(&opts.n, "n", -1, "N. Only the first one works in [-n|-file]. (default is the project setting, depend on project id given)")
-
-	flag.StringVar(&opts.file, "file", "", "Additional data file. Only the first one works in [-n|-file]. (default target to the data file come with source)")
-
-	flag.BoolVar(&opts.help, "h", false, "Usage information. IMPORT: Ensure there is a newline at the end of the file if the file is downloaded from projecteuler.org directly.")
-
-	flag.BoolVar(&opts.about, "about", false, "Print the default command line with given project id.")
+	const sID = "Project id."
+	const sN = "N. Only the first one works in [-n|-file]. (default is the project setting, depend on project id given)"
+	const sFILE = "Additional data file. Only the first one works in [-n|-file]. (default target to the data file come with source)"
+	const sHELP = "Usage information. IMPORT: Ensure there is a newline at the end of the file if the file is downloaded from projecteuler.org directly."
+	const sABOUT = "Print the default command line with given project id."
 
 	// parse command line arguments
+	flag.IntVar(&opts.id, "id", 1, sID)
+	flag.IntVar(&opts.n, "n", -1, sN)
+	flag.StringVar(&opts.file, "file", "", sFILE)
+	flag.BoolVar(&opts.help, "h", false, sHELP)
+	flag.BoolVar(&opts.about, "about", false, sABOUT)
 	flag.Parse()
 
 	// process arguments -h
