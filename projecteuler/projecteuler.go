@@ -11,172 +11,56 @@ import (
 	"strings"
 )
 
-const maxId = 521
+const maxid = 521
 
-// Id   option -id target the project to run.
-// N    option -n given N (OPTIONEL).
-// File option -f file path to the datafile (OPTIONEL).
-type Options struct {
-	Id   int
-	N    int
-	File string
+type options struct {
+	id    int
+	n     int
+	file  string
+	help  bool
+	about bool
 }
 
-// Functions projecteuler.PExxx() will get one or no argument and could be
-// any type, return value MUST be int type and no more, holding the answer.
-type Solver struct {
-	Caller   interface{} // Function handle of solver.
-	Arg      interface{} // Default argument used by solver.
-	Finished bool        // If the project had solved.
-	Comment  string      // Issues or todo information.
-}
+// Print the default command line with given project id.
+func PrintInfo(id int) {
+	fmt.Println("Project id:\t\t", id)
 
-// List all solver function handler and default argument.
-var Solvers = []Solver{
-	// 0 - Hold place, Useless!
-	{nil, nil, false, ""},
-	{projecteuler.PE1, int(1e3), true, ""},
-	{projecteuler.PE2, int(4e6), true, ""},
-	{projecteuler.PE3, int(600851475143), true, ""},
-	{projecteuler.PE4, nil, true, ""},
-	{projecteuler.PE5, int(20), true, ""},
-	{projecteuler.PE6, int(100), true, ""},
-	{projecteuler.PE7, int(10001), true, ""},
-	{projecteuler.PE8, int(13), true, ""},
-	{projecteuler.PE9, int(1000), true, ""},
-	{projecteuler.PE10, nil, true, ""},
-	{projecteuler.PE11, nil, true, ""},
-	{projecteuler.PE12, int(500), true, ""},
-	{projecteuler.PE13, "p013_bignumbers.txt", true, ""},
-	{projecteuler.PE14, int(1e6), true, ""},
-	{projecteuler.PE15, int(20), true, ""},
-	{projecteuler.PE16, int(1000), true, ""},
-	{projecteuler.PE17, int(1000), true, ""},
-	{projecteuler.PE18, "p018_path.txt", true, ""},
-	{projecteuler.PE19, nil, true, ""},
-	{projecteuler.PE20, int(100), true, ""},
-	{projecteuler.PE21, int(1e4), true, ""},
-	{projecteuler.PE22, "p022_names.txt", true, ""},
-	{projecteuler.PE23, nil, true, ""},
-	{projecteuler.PE24, int(1e6), true, ""},
-	{projecteuler.PE25, int(1000), true, ""},
-	{projecteuler.PE26, int(1000), true, ""},
-	{projecteuler.PE27, nil, true, ""},
-	{projecteuler.PE28, int(1001), true, ""},
-	{projecteuler.PE29, int(100), true, ""},
-	{projecteuler.PE30, int(5), true, ""},
-	{projecteuler.PE31, int(200), true, ""},
-	{projecteuler.PE32, nil, true, ""},
-	{projecteuler.PE33, nil, true, ""},
-	{projecteuler.PE34, nil, true, "this function will never stop"},
-	{projecteuler.PE35, int(1e6), true, ""},
-	{projecteuler.PE36, int(1e6), true, ""},
-	{projecteuler.PE37, nil, true, ""},
-	{projecteuler.PE38, nil, true, ""},
-	{projecteuler.PE39, int(1000), true, ""},
-	{projecteuler.PE40, int(1e6), true, ""},
-	{projecteuler.PE41, nil, true, "this function will never stop"},
-	{projecteuler.PE42, "p042_words.txt", true, ""},
-	{projecteuler.PE43, nil, true, ""},
-	{projecteuler.PE44, nil, true, ""},
-	{projecteuler.PE45, nil, true, "this function will never stop"},
-	{projecteuler.PE46, nil, true, ""},
-	{projecteuler.PE47, int(4), true, ""},
-	{projecteuler.PE48, int(1000), true, ""},
-	{projecteuler.PE49, nil, true, ""},
-	{projecteuler.PE50, int(1e6), true, ""},
-	{projecteuler.PE51, nil, true, ""},
-	{projecteuler.PE52, nil, true, ""},
-	{projecteuler.PE53, int(1e6), true, ""},
-	{projecteuler.PE54, "p054_poker.txt", true, ""},
-	{projecteuler.PE55, int(1e4), true, ""},
-	{projecteuler.PE56, int(100), true, ""},
-	{projecteuler.PE57, int(1000), true, ""},
-	{projecteuler.PE58, nil, true, "Run time about 1 hour"},
-	{projecteuler.PE59, "p059_cipher.txt", true, ""},
-	{projecteuler.PE60, nil, true, "this function will never stop"},
-	{projecteuler.PE61, nil, true, "Only print out answer"},
-	{projecteuler.PE62, nil, true, ""},
-	{projecteuler.PE63, nil, true, ""},
-	{projecteuler.PE64, int(10000), true, ""},
-	{projecteuler.PE65, nil, true, ""},
-	{projecteuler.PE66, int(1000), true, ""},
-	{projecteuler.PE67, "p067_triangle.txt", true, ""},
-	{projecteuler.PE68, nil, true, "Only print out answer"},
-	{projecteuler.PE69, int(1e6), true, ""},
-	{projecteuler.PE70, int(1e7), true, "Run time about 1 hour at 83%"},
-	{projecteuler.PE71, int(1e6), true, ""},
-	{projecteuler.PE72, int(1e6), true, ""},
-	{projecteuler.PE73, int(12000), true, "Run time about 5 minutes"},
-	{projecteuler.PE74, int(1e6), true, ""},
-	{projecteuler.PE75, int(1500000), true, ""},
-	{projecteuler.PE76, int(100), true, ""},
-	{projecteuler.PE77, int(5000), true, ""},
-	{projecteuler.PE78, int(1e6), true, ""},
-	{projecteuler.PE79, "p079_keylog.txt", false, ""},
-	{projecteuler.PE80, nil, false, ""},
-	{projecteuler.PE81, "p081_matrix.txt", true, ""},
-	{projecteuler.PE82, "p082_matrix.txt", true, ""},
-	{projecteuler.PE83, "p083_matrix.txt", false, ""},
-	{projecteuler.PE84, nil, false, ""},
-	{projecteuler.PE85, int(2e6), true, ""},
-	{projecteuler.PE86, int(1e2), false, ""},
-	{projecteuler.PE87, nil, false, ""},
-	{projecteuler.PE88, nil, false, ""},
-	{projecteuler.PE89, nil, false, ""},
-	{projecteuler.PE90, nil, false, ""},
-	{projecteuler.PE91, nil, false, ""},
-	{projecteuler.PE92, nil, false, ""},
-	{projecteuler.PE93, nil, false, ""},
-	{projecteuler.PE94, nil, false, ""},
-	{projecteuler.PE95, nil, false, ""},
-	{projecteuler.PE96, "p096_sudoku.txt", false, ""},
-	{projecteuler.PE97, nil, true, ""},
-	{projecteuler.PE98, "p098_words.txt", true, ""},
-	{projecteuler.PE99, "p099_base_exp.txt", true, ""},
-	{projecteuler.PE100, nil, false, ""},
-}
-
-// Print the default command line with given project Id.
-func PrintInfo(Id int) {
-	fmt.Println("Project Id:\t\t", Id)
-
-	if Solvers[Id].Arg == nil {
-		fmt.Println("Calling Command:\t", "projecteuler -id", Id)
-	} else if value, ok := Solvers[Id].Arg.(string); ok {
+	if projecteuler.Solvers[id].Arg == nil {
+		fmt.Println("Calling Command:\t", "projecteuler -id", id)
+	} else if value, ok := projecteuler.Solvers[id].Arg.(string); ok {
 		value = path.Join(os.Getenv("GOPATH"), "src",
 			"github.com/quchunguang/projecteuler/projecteuler", value)
-		fmt.Println("Calling Command:\t", "projecteuler -id", Id, "-f", value)
-	} else if value, ok := Solvers[Id].Arg.(int); ok {
-		fmt.Println("Calling Command:\t", "projecteuler -id", Id, "-n", value)
+		fmt.Println("Calling Command:\t", "projecteuler -id", id, "-f", value)
+	} else if value, ok := projecteuler.Solvers[id].Arg.(int); ok {
+		fmt.Println("Calling Command:\t", "projecteuler -id", id, "-n", value)
 	} else {
 		fmt.Println("[ERROR] BUG, Not supported argument type.")
 		os.Exit(5)
 	}
 
-	fmt.Println("Comments:\t\t", Solvers[Id].Comment)
-	fmt.Println("Solved:\t\t\t", Solvers[Id].Finished)
+	fmt.Println("Comments:\t\t", projecteuler.Solvers[id].Comment)
+	fmt.Println("Solved:\t\t\t", projecteuler.Solvers[id].Finished)
 
-	fmt.Println("\nTotal Projects:\t\t", maxId)
+	fmt.Println("\nTotal Projects:\t\t", maxid)
 
 	totalSolved := 0
-	for _, i := range Solvers {
+	for _, i := range projecteuler.Solvers {
 		if i.Finished {
 			totalSolved++
 		}
 	}
 	fmt.Println("Total Solved:\t\t", totalSolved)
 	fmt.Printf("Finished (%%):\t\t %4.1f\n",
-		float32(totalSolved)/float32(maxId)*100.0)
+		float32(totalSolved)/float32(maxid)*100.0)
 }
 
-// Call a solver function given project Id and argument.
+// Call a solver function given project id and argument.
 // If there is one argument, it could be any type.
-// If pass nil, means using default argument given in `Solvers` or the solver
+// If pass nil, means using default argument given in `projecteuler.Solvers` or the solver
 // function need no argument at all.
-func Call(Id int, arg interface{}) int {
-	if Solvers[Id].Arg != nil && arg == nil {
-		arg = Solvers[Id].Arg
+func Call(id int, arg interface{}) int {
+	if projecteuler.Solvers[id].Arg != nil && arg == nil {
+		arg = projecteuler.Solvers[id].Arg
 		if value, ok := arg.(string); ok {
 			// check if the argument is a file
 			if strings.HasSuffix(value, ".txt") {
@@ -190,7 +74,7 @@ func Call(Id int, arg interface{}) int {
 			}
 		}
 	}
-	f := reflect.ValueOf(Solvers[Id].Caller)
+	f := reflect.ValueOf(projecteuler.Solvers[id].Caller)
 	nArg := f.Type().NumIn()
 	if nArg == 0 && arg != nil || nArg == 1 && arg == nil || nArg > 1 {
 		fmt.Println("[ERROR] The number of parameters is not adapted.")
@@ -223,39 +107,46 @@ func ExistPath(p string) bool {
 }
 
 func main() {
+	var opts options
+
+	flag.IntVar(&opts.id, "id", 1, "Project id.")
+
+	flag.IntVar(&opts.n, "n", -1, "N. Only the first one works in [-n|-f]. (default is the project setting, depend on project id given)")
+
+	flag.StringVar(&opts.file, "file", "", "Additional data file. Only the first one works in [-n|-f]. (default target to the data file come with source)")
+
+	flag.BoolVar(&opts.help, "h", false, "Usage information. IMPORT: Ensure there is a newline at the end of the file if the file is downloaded from projecteuler.org directly.")
+
+	flag.BoolVar(&opts.about, "about", false, "Print the default command line with given project id.")
+
 	// parse command line arguments
-	var opts Options
-	flag.IntVar(&opts.Id, "id", 1, "Project Id.")
-	flag.IntVar(&opts.N, "n", -1, "N. Only the first one works in [-n|-f]. (default is the project setting, depend on project id given)")
-	flag.StringVar(&opts.File, "f", "", "Additional data file. Only the first one works in [-n|-f]. (default target to the data file come with source)")
-	help := flag.Bool("h", false, "Usage information. IMPORT: Ensure there is a newline at the end of the file if the file is downloaded from projecteuler.org directly.")
-	about := flag.Bool("about", false, "Print the default command line with given project Id.")
 	flag.Parse()
 
 	// process arguments -h
-	if *help {
+	if opts.help {
 		flag.Usage()
 		return
 	}
 
 	// check project id
-	if opts.Id < 1 || opts.Id >= len(Solvers) || !Solvers[opts.Id].Finished {
-		fmt.Println("[ERROR] No such project Id or net solved yet!")
+	if opts.id < 1 || opts.id >= len(projecteuler.Solvers) ||
+		!projecteuler.Solvers[opts.id].Finished {
+		fmt.Println("[ERROR] No such project id or net solved yet!")
 		os.Exit(3)
 	}
 
 	// process argument -about
-	if *about {
-		PrintInfo(opts.Id)
+	if opts.about {
+		PrintInfo(opts.id)
 		return
 	}
 
-	// process arguments -n -f
+	// process arguments -n -file
 	var arg interface{}
-	if opts.N != -1 {
-		arg = opts.N
-	} else if opts.File != "" {
-		p := opts.File
+	if opts.n != -1 {
+		arg = opts.n
+	} else if opts.file != "" {
+		p := opts.file
 		if !path.IsAbs(p) {
 			abs, _ := os.Getwd()
 			p = path.Join(abs, p)
@@ -270,6 +161,6 @@ func main() {
 	}
 
 	// calling solver
-	answer := Call(opts.Id, arg)
+	answer := Call(opts.id, arg)
 	fmt.Println(answer)
 }
